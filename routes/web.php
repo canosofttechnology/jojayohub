@@ -223,6 +223,7 @@ Route::group(['prefix' => 'auth', 'middleware' => ['auth']], function() {
     Route::resource('product_categories','ProductCategoryController');
 
     Route::resource('users', 'UserController');
+    Route::post('user/{user_id}/update','UserController@updateProfile')->name('user.profile');
 
     Route::resource('blogs', 'BlogController');
 

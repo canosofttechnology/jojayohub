@@ -28,7 +28,7 @@ class UserController extends Controller
     protected $employee = null;
     protected $category_permitted = null;
 
-    public function __construct(User $user,Customer $customer,ProductCategory $category,Vendor $vendor,Employee $employee,CategoryPermitted $category_permitted)
+    public function __construct(User $user, Customer $customer, ProductCategory $category, Vendor $vendor, Employee $employee, CategoryPermitted $category_permitted)
     {
         $this->user = $user;
         $this->customer = $customer;
@@ -46,6 +46,8 @@ class UserController extends Controller
      */
     public function index()
     {
+        if (Auth::user()->roles == 'vendor')
+            return view('errors.403');
         $active_tab = "manage";
         $allCategories = $this->category->get();
         $allUsers = $this->user->where('roles', '!=', 'customers')->get();
@@ -86,7 +88,7 @@ class UserController extends Controller
         $this->user->fill($data);
         $status = $this->user->save();
         $user_id = $this->user->id;
-        if($data['roles'] == 'vendor'){
+        if ($data['roles'] == 'vendor') {
             $vendor_data['user_id'] = $user_id;
             $vendor_data['company'] = $request->company;
             $vendor_data['company_address'] = $request->company_address;
@@ -95,9 +97,9 @@ class UserController extends Controller
             $this->vendor->fill($vendor_data);
             $vendor_data = $this->vendor->save();
             $vendor_id = $this->vendor->id;
-            if($vendor_data){
-                if(!empty($request->categories)){
-                    foreach($request->categories as $cat_permitted){
+            if ($vendor_data) {
+                if (!empty($request->categories)) {
+                    foreach ($request->categories as $cat_permitted) {
                         CategoryPermitted::create([
                             'vendor_id' => $vendor_id,
                             'category_id' => $cat_permitted
@@ -106,7 +108,7 @@ class UserController extends Controller
                 }
             }
         }
-        if($data['roles'] == 'employee'){
+        if ($data['roles'] == 'employee') {
             $employee_data['user_id'] = $user_id;
             $employee_data['DOB'] = $request->DOB;
             $employee_data['address'] = $request->address;
@@ -115,7 +117,7 @@ class UserController extends Controller
             $this->employee->fill($employee_data);
             $this->employee->save();
         }
-        if($data['roles'] == 'customer'){
+        if ($data['roles'] == 'customer') {
             $customer_data['user_id'] = $user_id;
             $customer_data['billing_address'] = $request->billing_address;
             $customer_data['shipping_address'] = $request->shipping_address;
@@ -127,37 +129,38 @@ class UserController extends Controller
             return redirect('/customer/dashboard');
         }
 
-        if($status){
-            $request->session()->flash('success','User created successfully.');
+        if ($status) {
+            $request->session()->flash('success', 'User created successfully.');
         } else {
-            $request->session()->flash('error','Problem while creating user.');
+            $request->session()->flash('error', 'Problem while creating user.');
         }
         return redirect()->route('users.index');
     }
 
-    public function customerSignUp(Request $request){
-      $rules = $this->user->getRules();
-      $request->validate($rules);
-      $data = $request->all();
-      $data['email'] = $request->email;
-      $password = $request->password;
-      $confirm = $request->confirm;
-      if($password != $confirm){
-        $errors = new MessageBag(['confirm' => ['Password confirmation did not matched!']]);
-        return redirect()->back()->withErrors($errors)->withInput($request->all());
-      }
-      $data['password'] = Hash::make($request->password);
-      $data['contact'] = $request->contact;
-      $data['image'] = $request->image;
-      $data['roles'] = 'customers';
-      $this->user->fill($data);
-      $customer_data = array();
-      $this->user->save();
-      $customer_data['token'] = sha1(time());
-      $customer_data['email'] = $request->email;
-      Mail::to($data['email'])->send(new CustomerVerification($customer_data));
-      request()->session()->flash('success', 'Please open your email and click on the confirmation link to verify your email address.');
-      return redirect()->route('signinform');
+    public function customerSignUp(Request $request)
+    {
+        $rules = $this->user->getRules();
+        $request->validate($rules);
+        $data = $request->all();
+        $data['email'] = $request->email;
+        $password = $request->password;
+        $confirm = $request->confirm;
+        if ($password != $confirm) {
+            $errors = new MessageBag(['confirm' => ['Password confirmation did not matched!']]);
+            return redirect()->back()->withErrors($errors)->withInput($request->all());
+        }
+        $data['password'] = Hash::make($request->password);
+        $data['contact'] = $request->contact;
+        $data['image'] = $request->image;
+        $data['roles'] = 'customers';
+        $this->user->fill($data);
+        $customer_data = array();
+        $this->user->save();
+        $customer_data['token'] = sha1(time());
+        $customer_data['email'] = $request->email;
+        Mail::to($data['email'])->send(new CustomerVerification($customer_data));
+        request()->session()->flash('success', 'Please open your email and click on the confirmation link to verify your email address.');
+        return redirect()->route('signinform');
     }
 
     /**
@@ -168,7 +171,20 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
+        $data = $this->user->findOrFail($id);
+        $employee_data = null;
+        $vendor_data = null;
+        $permitted = null;
+        $allCategories = null;
+        if ($data->roles == 'vendor') {
+            $vendor_data = $this->vendor->where('user_id', $id)->first();
+            $permitted = $this->category_permitted->where('vendor_id', $vendor_data->id)->get();
+            $allCategories = $this->category->get();
+        } elseif ($data->roles ==  'employee') {
+            $employee_data = $this->employee->where('user_id', $id)->first();
+        }
+        // dd($employee_data);
+        return view('admin.user.profile', compact('data', 'employee_data', 'vendor_data', 'permitted', 'allCategories'));
     }
 
     /**
@@ -180,23 +196,23 @@ class UserController extends Controller
     public function edit($id)
     {
         $data = $this->user->find($id);
-        if(!$data) {
-            request()->session()->flash('error','User not found');
+        if (!$data) {
+            request()->session()->flash('error', 'User not found');
             return redirect()->back();
         }
         $allCategories = $this->category->get();
         $vendor_data = '';
         $employee_data = '';
         $permitted = '';
-        if($data->roles == 'vendor'){
+        if ($data->roles == 'vendor') {
             $vendor_data = $this->vendor->where('user_id', $id)->first();
             $permitted = $this->category_permitted->where('vendor_id', $vendor_data->id)->get();
-        } elseif($data->roles ==  'employee'){
+        } elseif ($data->roles ==  'employee') {
             $employee_data = $this->employee->where('user_id', $id)->first();
         }
         $active_tab = 'create';
         $allUsers = $this->user->where('roles', '!=', 'customers')->get();
-        return view('admin.pages.users', compact('allUsers', 'allCategories','data', 'permitted', 'employee_data', 'vendor_data', 'active_tab'));
+        return view('admin.pages.users', compact('allUsers', 'allCategories', 'data', 'permitted', 'employee_data', 'vendor_data', 'active_tab'));
     }
 
     /**
@@ -210,11 +226,11 @@ class UserController extends Controller
     {
         $request['user_id'] = $id;
         $this->user = $this->user->find($id);
-        if(!$this->user) {
-            request()->session()->flash('error','User not found');
+        if (!$this->user) {
+            request()->session()->flash('error', 'User not found');
             return redirect()->back();
         }
-        if($request->password == null){
+        if ($request->password == null) {
             $request['password'] = $this->user->password;
         }
         $rules = $this->user->getRules('update');
@@ -222,8 +238,8 @@ class UserController extends Controller
         $data = $request->all();
         $this->user->fill($data);
         $user_status = $this->user->save();
-        if($user_status){
-            if($data['roles'] == 'vendor'){
+        if ($user_status) {
+            if ($data['roles'] == 'vendor') {
                 $this->vendor = $this->vendor->where('user_id', $id)->first();
                 $vendor_data['user_id'] = $id;
                 $vendor_data['company'] = $request->company;
@@ -233,12 +249,14 @@ class UserController extends Controller
                 $this->vendor->fill($vendor_data);
                 $vendor_data = $this->vendor->save();
                 $vendor_id = $this->vendor->id;
-                if($vendor_data){
+                if ($vendor_data) {
                     $users_to_delete = $this->category_permitted->where('vendor_id', $vendor_id)->get()->toArray();
-                    $ids_to_delete = array_map(function($item){ return $item['id']; }, $users_to_delete);
+                    $ids_to_delete = array_map(function ($item) {
+                        return $item['id'];
+                    }, $users_to_delete);
                     DB::table('category_permitteds')->whereIn('id', $ids_to_delete)->delete();
-                    if(!empty($request->categories)){
-                        foreach($request->categories as $cat_permitted){
+                    if (!empty($request->categories)) {
+                        foreach ($request->categories as $cat_permitted) {
                             CategoryPermitted::create([
                                 'vendor_id' => $vendor_id,
                                 'category_id' => $cat_permitted
@@ -247,7 +265,7 @@ class UserController extends Controller
                     }
                 }
             }
-            if($data['roles'] == 'employee'){
+            if ($data['roles'] == 'employee') {
                 $this->employee = $this->employee->where('user_id', $id)->first();
                 $employee_data['user_id'] = $id;
                 $employee_data['DOB'] = $request->DOB;
@@ -258,7 +276,7 @@ class UserController extends Controller
                 $this->employee->save();
             }
         }
-        $request->session()->flash('success','User updated successfully.');
+        $request->session()->flash('success', 'User updated successfully.');
         return redirect()->route('users.index');
     }
 
@@ -271,68 +289,68 @@ class UserController extends Controller
     public function destroy($id)
     {
         $this->user = $this->user->find($id);
-        if(!$this->user){
-            request()->session()->flash('error','User Not found');
+        if (!$this->user) {
+            request()->session()->flash('error', 'User Not found');
             return redirect()->route('users.index');
         }
 
         $success = $this->user->delete();
-        if($success){
-            request()->session()->flash('success','User deleted successfully.');
+        if ($success) {
+            request()->session()->flash('success', 'User deleted successfully.');
         } else {
-            request()->session()->flash('error','Sorry! User could not be deleted at this moment.');
+            request()->session()->flash('error', 'Sorry! User could not be deleted at this moment.');
         }
         return redirect()->route('users.index');
     }
 
-    public function login(Request $request){
+    public function login(Request $request)
+    {
         $user = User::where('email', '=', $request->input('email'))->first();
         if ($user === null) {
             $errors = new MessageBag(['email' => ['User not found in database.']]);
             return redirect()->back()->withErrors($errors)->withInput($request->all());
         }
         $password = Hash::check($request->input('password'), $user->password);
-         if(!$password){
-             $errors = new MessageBag(['password' => ['password mismatched!']]);
-             return redirect()->back()->withErrors($errors)->withInput($request->all());
+        if (!$password) {
+            $errors = new MessageBag(['password' => ['password mismatched!']]);
+            return redirect()->back()->withErrors($errors)->withInput($request->all());
         }
 
-        if($user->roles == 'customers'){
-          $errors = new MessageBag(['email' => ['You cannot login to '.$user->roles.' dashboard with this email.']]);
-          return redirect()->back()->withErrors($errors)->withInput($request->all());
+        if ($user->roles == 'customers') {
+            $errors = new MessageBag(['email' => ['You cannot login to ' . $user->roles . ' dashboard with this email.']]);
+            return redirect()->back()->withErrors($errors)->withInput($request->all());
         }
 
-        if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){
-            if($user->roles == 'admin'){
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            if ($user->roles == 'admin') {
                 return redirect('/auth/dashboard');
-            } elseif($user->roles == 'vendor'){
+            } elseif ($user->roles == 'vendor') {
                 return redirect('/auth/dashboard');
-            } elseif($user->roles == 'employee'){
+            } elseif ($user->roles == 'employee') {
                 return redirect('/auth/dashboard');
             }
-
         }
     }
 
-    public function CustomerLogin(Request $request){
+    public function CustomerLogin(Request $request)
+    {
         $user = User::where('email', '=', $request->input('email'))->first();
         if ($user === null) {
-          request()->session()->flash('email','Email not found in our database.');
-          return back();
+            request()->session()->flash('email', 'Email not found in our database.');
+            return back();
         }
         $password = Hash::check($request->input('password'), $user->password);
-         if(!$password){
-           request()->session()->flash('password','Password mismatched!');
-           return back();
+        if (!$password) {
+            request()->session()->flash('password', 'Password mismatched!');
+            return back();
         }
-        if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){
-            if(Auth::user()->roles == 'customers'){
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            if (Auth::user()->roles == 'customers') {
                 return redirect('/dashboard');
-            }  else {
-              request()->session()->flash('warning','You cannot login to '.Auth::user()->roles.' dashboard from this form!');
-              return back();
+            } else {
+                request()->session()->flash('warning', 'You cannot login to ' . Auth::user()->roles . ' dashboard from this form!');
+                return back();
             }
-
         }
     }
 
@@ -341,8 +359,9 @@ class UserController extends Controller
     //     return Socialite::driver('facebook')->redirect();
     // }
 
-    public function redirectToProvider($service) {
-        return Socialite::driver ( $service )->redirect ();
+    public function redirectToProvider($service)
+    {
+        return Socialite::driver($service)->redirect();
     }
 
     public function handleProviderCallback($service)
@@ -351,14 +370,14 @@ class UserController extends Controller
         $userExists = User::where('email', '=', $user->getEmail())->first();
         if ($userExists) {
             $usersRole = $userExists->roles;
-            if($usersRole !== 'customers'){
-                request()->session()->flash('warning','You cannot log in to customers dashboard with this Facebook account!');
-              return back();
+            if ($usersRole !== 'customers') {
+                request()->session()->flash('warning', 'You cannot log in to customers dashboard with this Facebook account!');
+                return back();
             }
-          Auth::login($userExists);
-          return redirect('dashboard');
+            Auth::login($userExists);
+            return redirect('dashboard');
         }
-        $password = $user->getId().'password'.$user->getNickname();
+        $password = $user->getId() . 'password' . $user->getNickname();
         $data['name'] = $user->getName();
         $data['email'] = $user->getEmail();
         $data['password'] = Hash::make($password);
@@ -371,27 +390,100 @@ class UserController extends Controller
         return redirect('dashboard');
     }
 
-    public function UpdateUser(Request $request, $id){
-      $user_data = $this->user->find($id);
-
-      if(!$user_data) {
-          request()->session()->flash('error','User not found');
-          return redirect()->back();
-      }
-      if($request->password == null){
-          $request['password'] = $this->user->password;
-      }
-      if($request->change_password == 1){
-        if (Hash::check($request->old_password, $user_data->password)) {
-          $errors = new MessageBag(['old_password' => ['The old password you entered did not matched!']]);
-          return redirect()->back()->withErrors($errors)->withInput($request->all());
+    public function UpdateUser(Request $request, $id)
+    {
+        $user_data = $this->user->find($id);
+        if (!$user_data) {
+            request()->session()->flash('error', 'User not found');
+            return redirect()->back();
         }
-        $request['password'] = Hash::make($request->confirm);
-      }
-      $rules = $this->user->getRules('update');
-      $request->validate($rules);
-      $data = $request->all();
-      $this->user->fill($data);
-      $user_status = $this->user->save();
+        if ($request->password == null) {
+            $request['password'] = $this->user->password;
+        }
+        if ($request->change_password == 1) {
+            if (Hash::check($request->old_password, $user_data->password)) {
+                $errors = new MessageBag(['old_password' => ['The old password you entered did not matched!']]);
+                return redirect()->back()->withErrors($errors)->withInput($request->all());
+            }
+            $request['password'] = Hash::make($request->confirm);
+        }
+        $rules = $this->user->getRules('update');
+        $request->validate($rules);
+        $data = $request->all();
+        $this->user->fill($data);
+        $user_status = $this->user->save();
+    }
+
+    public function updateProfile(Request $request, $user_id)
+    {
+        // dd($request->all());
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user_id,
+            'contact' => 'nullable|string',
+            'image' => 'nullable|string'
+        ]);
+
+        $user_data = User::findOrFail($user_id);
+
+        // if($user_data->roles=='vendor'){
+        //     $request->validate([
+        //         'company' => 'required|string|max:255',
+        //         'vendor_address' => 'required|string|email|max:255|unique:users,email,' . $user_id,
+        //         'company_address' => 'nullable|string',
+        //         'categories' => 'nullable|string'
+        //     ]);
+        // }
+        if ($request->password == null && isset($user_data)) {
+            $request['password'] = $user_data->password;
+        } else {
+            if (Hash::check($request->old_password, $user_data->password)) {
+                $errors = new MessageBag(['old_password' => ['The old password you entered did not matched!']]);
+                return redirect()->back()->withErrors($errors)->withInput($request->all());
+            }
+            $request['password'] = Hash::make($request->confirm);
+        }
+        $request['id'] = $user_id;
+        $data = $request->all();
+        $user_data->fill($data);
+        $user_status = $user_data->save();
+        if ($user_data) {
+            if ($user_data->roles == 'employee') {
+                $this->employee = $this->employee->where('user_id', $user_id)->first();
+                $employee_data['user_id'] = $user_id;
+                $employee_data['DOB'] = $request->DOB;
+                $employee_data['address'] = $request->address;
+                $this->employee->fill($employee_data);
+                $this->employee->save();
+            }
+
+            if ($user_data->roles == 'vendor') {
+                $this->vendor = $this->vendor->where('user_id', $user_id)->first();
+                $vendor_data['user_id'] = $user_id;
+                $vendor_data['company'] = $request->company;
+                $vendor_data['company_address'] = $request->company_address;
+                $vendor_data['vendor_address'] = $request->vendor_address;
+                // $vendor_data['status'] = $request->status;
+                $this->vendor->fill($vendor_data);
+                $vendor_data = $this->vendor->save();
+                $vendor_id = $this->vendor->id;
+                if ($vendor_data) {
+                    $users_to_delete = $this->category_permitted->where('vendor_id', $vendor_id)->get()->toArray();
+                    $ids_to_delete = array_map(function ($item) {
+                        return $item['id'];
+                    }, $users_to_delete);
+                    DB::table('category_permitteds')->whereIn('id', $ids_to_delete)->delete();
+                    if (!empty($request->categories)) {
+                        foreach ($request->categories as $cat_permitted) {
+                            CategoryPermitted::create([
+                                'vendor_id' => $vendor_id,
+                                'category_id' => $cat_permitted
+                            ]);
+                        }
+                    }
+                }
+            }
+        }
+        return redirect()->back();
     }
 }
