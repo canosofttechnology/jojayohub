@@ -198,18 +198,24 @@
                         <i class="fa fa-plus-circle"></i>
                     </a>
                     <ul class="dropdown-menu animated zoomIn">
-                        <li>
-                            <a href="{{ route('blogs.create') }}">New Blog</a>
-                        </li>
+                        @if (Auth::user()->roles=='admin')
+                            <li>
+                                <a href="{{ route('users.create') }}">New User</a>
+                            </li>
+                        @endif
+
+                        @if (Auth::user()->roles=='vendor'||Auth::user()->roles=='admin')
                         <li>
                             <a href="{{ route('products.create') }}">New Product</a>
                         </li>
+                        @endif
                         <li>
                             <a href="{{ route('category.index') }}">New Category</a>
                         </li>
                         <li>
-                            <a href="{{ route('users.create') }}">New User</a>
+                            <a href="{{ route('blogs.create') }}">New Blog</a>
                         </li>
+
                         <li>
                             <a href="{{ route('ads.create') }}">New Ad</a>
                         </li>
@@ -221,21 +227,6 @@
                         </li>
                         <li>
                             <a href="{{ route('areas.create') }}">New Area</a>
-                        </li>
-                        <li>
-                            <a href="">New Useful links</a>
-                        </li>
-                        <li>
-                            <a href="#">New Podcast</a>
-                        </li>
-                        <li>
-                            <a href="#">New Advertisement</a>
-                        </li>
-                        <li>
-                            <a href="#">New Quiz winner</a>
-                        </li>
-                        <li>
-                            <a href="#">New Subscriber</a>
                         </li>
                     </ul>
                 </li>
