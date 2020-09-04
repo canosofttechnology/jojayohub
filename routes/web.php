@@ -153,8 +153,8 @@ Route::get('/checkout/payment/{order}/failed', [
 ]);
 
 // senstive
-Route::post('/product-available-size/{id}', 'ProductSizeController@GetAvailableSize');
-Route::post('get-stock/', 'ProductSizeController@getstock')->name('getstock');
+// Route::post('/product-available-size/{id}', 'ProductSizeController@GetAvailableSize');
+// Route::post('get-stock/', 'ProductSizeController@getstock')->name('getstock');
 
 Route::get('user/address/{id}', 'AddressBookController@userAddress')->name('user.address');
 Route::resource('orders', 'OrderController');
@@ -183,7 +183,8 @@ Route::group(['prefix' => 'auth', 'middleware' => ['auth']], function() {
 
     Route::resource('sales', 'SalesController');
 
-    Route::post('/product-available-color/{id}', 'ProductSizeController@GetAvailableColor');
+    // Route::post('/product-available-color/{id}', 'ProductSizeController@GetAvailableColor');
+    Route::get('/get_product_price/{id}', 'ProductController@getSet');
 
     Route::get('/get_attribute/{id}', 'CategoryAttributeController@getAttribute');
 
@@ -191,7 +192,7 @@ Route::group(['prefix' => 'auth', 'middleware' => ['auth']], function() {
 
     Route::get('/get_attribute_data/{id}', 'CategoryAttributeController@getAttributeData');
 
-    Route::post('/admin/get-account/', 'AccountController@getAccounts')->name('getaccounts');
+    // Route::post('/admin/get-account/', 'AccountController@getAccounts')->name('getaccounts');
 
     Route::delete('/product-images-delete', 'ProductImageController@destroyProductImages')->name('delete_product_images');
 
@@ -265,6 +266,9 @@ Route::group(['prefix' => 'auth', 'middleware' => ['auth']], function() {
     Route::get('/secondary_category_edit/{slug}', 'SecondaryCategoryController@editSecondaryCategory')->name('editSecondaryCategory');
 
     Route::get('last-payment','PaymentController@lastPaymentData')->name('lastPaymentData');
+
+    // vendor produt
+    Route::post('/get_vendor_post','ProductController@getVendorProduct')->name('VendorProduct');
 
 });
 
