@@ -199,11 +199,12 @@
                     </a>
                     <ul class="dropdown-menu animated zoomIn">
                         <li>
-                            <a href="{{ route('blogs.create') }}">New Blog</a>
-                        </li>
-                        <li>
                             <a href="{{ route('products.create') }}">New Product</a>
                         </li>
+                        @if(Auth::user()->role == 'admin')
+                        <li>
+                            <a href="{{ route('blogs.create') }}">New Blog</a>
+                        </li>                        
                         <li>
                             <a href="{{ route('category.index') }}">New Category</a>
                         </li>
@@ -219,24 +220,9 @@
                         <li>
                             <a href="{{ route('cities.create') }}">New City</a>
                         </li>
-                        <li>
-                            <a href="{{ route('areas.create') }}">New Area</a>
-                        </li>
-                        <li>
-                            <a href="">New Useful links</a>
-                        </li>
-                        <li>
-                            <a href="#">New Podcast</a>
-                        </li>
-                        <li>
-                            <a href="#">New Advertisement</a>
-                        </li>
-                        <li>
-                            <a href="#">New Quiz winner</a>
-                        </li>
-                        <li>
-                            <a href="#">New Subscriber</a>
-                        </li>
+                        
+                        @endif
+                        
                     </ul>
                 </li>
                 <!-- START Alert menu-->

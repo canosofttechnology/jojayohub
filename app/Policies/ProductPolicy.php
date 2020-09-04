@@ -24,8 +24,8 @@ class ProductPolicy
 
     public function view(User $user, Product $product)
     {
-        $vendor_id = Vendor::where('user_id', $user->id)->pluck('id');
-        return $vendor_id[0] === $product->vendor_id;
+        $vendor_id = Vendor::where('user_id', $user->id)->pluck('id')->first();
+        return $vendor_id === $product->vendor_id;
     }
 
     public function create(User $user)
