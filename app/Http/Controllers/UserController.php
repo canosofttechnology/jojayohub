@@ -416,7 +416,6 @@ class UserController extends Controller
 
     public function updateProfile(Request $request, $user_id)
     {
-        // dd($request->all());
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user_id,
@@ -426,14 +425,6 @@ class UserController extends Controller
 
         $user_data = User::findOrFail($user_id);
 
-        // if($user_data->roles=='vendor'){
-        //     $request->validate([
-        //         'company' => 'required|string|max:255',
-        //         'vendor_address' => 'required|string|email|max:255|unique:users,email,' . $user_id,
-        //         'company_address' => 'nullable|string',
-        //         'categories' => 'nullable|string'
-        //     ]);
-        // }
         if ($request->password == null && isset($user_data)) {
             $request['password'] = $user_data->password;
         } else {
@@ -485,5 +476,24 @@ class UserController extends Controller
             }
         }
         return redirect()->back();
+    }
+
+    public function userInfo($user_id)
+    {
+        $data = $this->user->findOrFail($user_id);
+        $employee_data = null;
+        $vendor_data = null;
+        $permitted = null;
+        $allCategories=null;
+        if ($data->roles == 'vendor') {
+            $vendor_data = $this->vendor->with('categoryAssigned')->where('user_id', $user_id)->first();
+            if (isset($vendor_data)) {
+                $allCategories = $this->category->get();
+                $permitted = $this->category_permitted->where('vendor_id', $vendor_data->id)->get();
+            }
+        } elseif ($data->roles ==  'employee') {
+            $employee_data = $this->employee->where('user_id', $user_id)->first();
+        }
+        return view('admin.user.info.user_info', compact('data', 'employee_data', 'vendor_data', 'permitted','allCategories'));
     }
 }

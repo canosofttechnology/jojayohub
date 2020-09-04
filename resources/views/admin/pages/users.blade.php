@@ -28,7 +28,9 @@
                             @if(!empty($allUsers)) @foreach($allUsers as $userLists)
                             <tr id="{{ $userLists->id }}">
                                 <td><input type="checkbox" name="delete_items" value="{{ $userLists->id }}"></td>
-                                <td>{{ $userLists->name }}</td>
+                                <td>
+                                <a href="{{ route('user.info',$userLists->id)}}">{{ $userLists->name }}</a>
+                                </td>
                                 <td>{{ $userLists->email }}</td>
                                 <td>{{ $userLists->roles }}</td>
                                 <td><a href="{{ $userLists->image }}" class="iframe-btn">View Profile Image</a></td>
