@@ -531,4 +531,14 @@ class ProductController extends Controller
       }
     }
 
+    public function getVendorProduct(Request $request){
+        $product_list = $this->product->where('vendor_id', $request->id)->orderBy('created_at','desc')->get();
+        return response()->json($product_list);
+    }
+
+    public function getSet($id){
+        $set_detail = $this->set->where('product_id', $id)->first();
+        return response()->json($set_detail);
+    }
+
 }

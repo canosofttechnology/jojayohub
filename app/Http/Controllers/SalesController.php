@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Sales;
 use App\Models\ProductSize;
 use App\Models\Product;
+use App\Models\Vendor;
 use App\Models\Payment;
 
 class SalesController extends Controller
@@ -17,11 +18,12 @@ class SalesController extends Controller
     protected $products = null;
     protected $payments = null;
 
-    public function __construct(Sales $sales, ProductSize $product_sizes, Product $products, Payment $payments){
+    public function __construct(Sales $sales, ProductSize $product_sizes, Product $products, Payment $payments, Vendor $vendor){
         $this->sales = $sales;
         $this->product_sizes = $product_sizes;
         $this->products = $products;
         $this->payments = $payments;
+        $this->vendor = $vendor;
         //$this->authorizeResource(Sales::class, 'sales');
     }
 
@@ -33,10 +35,11 @@ class SalesController extends Controller
     public function index()
     {
         $sales_list = $this->sales->get();
+        $vendor_list = $this->vendor->orderBy('company', 'ASC')->get();
         $methods = $this->payments->get();
         $product_list = $this->products->get();
         $active_tab = 'manage';
-        return view('admin.pages.sales', compact('sales_list', 'active_tab','product_list', 'methods'));
+        return view('admin.pages.sales', compact('sales_list', 'active_tab','product_list', 'methods','vendor_list'));
     }
 
     /**
@@ -47,10 +50,11 @@ class SalesController extends Controller
     public function create()
     {
         $product_list = $this->products->get();
+        $vendor_list = $this->vendor->orderBy('company', 'ASC')->get();
         $sales_list = $this->sales->get();
         $methods = $this->payments->get();
         $active_tab = 'create';
-        return view('admin.pages.sales', compact('product_list','methods', 'sales_list', 'active_tab'));
+        return view('admin.pages.sales', compact('product_list','methods', 'sales_list', 'active_tab','vendor_list'));
     }
 
     /**
@@ -65,27 +69,26 @@ class SalesController extends Controller
         $request->validate($rules);
         $data = $request->all();
         $data['product_id'] = $request->product_id;
-        $data['user_id'] = Auth::user()->id;
-        $data['size_id'] = $request->size_id;
+        $data['vendor_id'] = $request->vendor_id;
         $data['price'] = $request->price;
-        $data['discount'] = $request->discount;
         $data['quantity'] = $request->quantity;
-        $data['sales_date'] = $request->sales_date;
+        $data['date'] = $request->date;
         $data['status'] = $request->status;
+        $data['type'] = $request->type;
         $this->sales->fill($data);
         $status = $this->sales->save();
         if($status){
-            $added_sales = $this->product_sizes->where('product_id', $request->product_id)->where('size_id', $request->size_id)->first();
-            $prev_stock = $added_sales->stock;
-            if($added_sales){
-                $added_sales->stock = $prev_stock - $request->quantity;
-                $added_sales->save();
-            }
-            request()->session()->flash('success','Sales added successfully.');
+            $notification = array(
+                'alert-type' => 'success',
+                'message' => 'Sales added successfully.'
+            );
         } else {
-            request()->session()->flash('error','Sorry! Sales could not be added at this moment.');
+            $notification = array(
+                'alert-type' => 'error',
+                'message' => 'Sorry! Sales could not be added at this moment.'
+            );
         }
-        return redirect()->route('sales.index');
+        return redirect()->route('sales.index')->with('notification');
     }
 
     /**
@@ -108,11 +111,12 @@ class SalesController extends Controller
     public function edit($id)
     {
         $data = $this->sales->where('slug', $slug)->first();
+        $vendor_list = $this->vendor->orderBy('company', 'ASC')->get();
         if(!$data){
             request()->session()->flash('error','Brand Not found');
             return redirect()->route('brands.index');
         }
-        return view('admin.pages.add_sales', compact('data'));
+        return view('admin.pages.add_sales', compact('data','vendor_list'));
     }
 
     /**
