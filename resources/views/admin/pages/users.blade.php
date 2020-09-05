@@ -150,6 +150,7 @@
                  </div>
 
                   <div class="tab-pane @if($active_tab == 'create') active @endif" id="create">
+                    {{print_r($errors->all())}}
                     @if (Auth::user()->roles=='admin')
                   @if(!empty(@$data))
                         {{ Form::open(['url'=>route('users.update', @$data->id), 'class'=>'form-horizontal', 'id'=>'user_add', 'files'=>true,'method'=>'patch']) }}
@@ -200,6 +201,7 @@
                                                             <option value="admin" {{  @$data->roles == 'admin' ? 'selected' : ''}}>Admin</option>
                                                             <option value="vendor" {{  @$data->roles == 'vendor' ? 'selected' : ''}}>Vendor</option>
                                                             <option value="employee" {{  @$data->roles == 'employee' ? 'selected' : ''}}>Editor</option>
+                                                            <option value="customers" {{  @$data->roles == 'customers' ? 'selected' : ''}}>Customer</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -263,6 +265,35 @@
                                                                 <option value="verified" {{  @$vendor_data->status == 'verified' ? 'selected' : ''}}>Verified</option>
                                                                 <option value="unverified" {{  @$vendor_data->status == 'unverified' ? 'selected' : ''}}>Not verified</option>
                                                                 <option value="suspended" {{  @$vendor_data->status == 'suspended' ? 'selected' : ''}}>Suspended</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div id="customer">
+                                                    <div class="form-group row">
+                                                        <label class="col-sm-2 control-label"><strong>Company</strong> <span class="text-danger">*</span></label>
+                                                        <div class="col-sm-8">
+                                                            <input type="text" class="form-control" value="{{ @$customer_data->company }}" name="company" id="company" placeholder="Name of the company">
+                                                            <span class="messages"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-sm-2 control-label"><strong>Address</strong> <span class="text-danger">*</span></label>
+                                                        <div class="col-sm-8">
+                                                            <input type="text" class="form-control" value="{{ @$customer_data->customer_address }}" name="vendor_address" id="address" placeholder="Addresss">
+                                                            <span class="messages"></span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <label class="col-sm-2 control-label"><strong>Status</strong> <span class="text-danger">*</span></label>
+                                                        <div class="col-sm-8">
+                                                            <select name="status" id="status" class="form-control">
+                                                                <option selected disabled>--Select user status--</option>
+                                                                <option value="verified" {{  @$customer_data->status == 'verified' ? 'selected' : ''}}>Verified</option>
+                                                                <option value="unverified" {{  @$customer_data->status == 'unverified' ? 'selected' : ''}}>Not verified</option>
+                                                                <option value="suspended" {{  @$customer_data->status == 'suspended' ? 'selected' : ''}}>Suspended</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -368,13 +399,20 @@
             if('{{ @$data->roles }}' == 'vendor'){
                 $('#vendor').show();
                 $('#employee').hide();
+                $('#customer').hide();
             } else if('{{ @$data->roles }}' == 'employee'){
                 $('#vendor').hide();
                 $('#employee').show();
+                $('#customer').hide();
+            }else if('{{ @$data->roles }}' == 'customers'){
+                $('#customer').show();
+                $('#vendor').hide();
+                $('#employee').hide();
             }
         }else if(data == 'no') {
             $('#vendor').hide();
             $('#employee').hide();
+            $('#customer').hide();
         }
 
         $("#name").keyup(function (){
@@ -386,10 +424,17 @@
             if(role == 'vendor'){
                 $('#vendor').show(1000);
                 $('#employee').hide(1000);
+                $('#customer').hide(1000);
             } else if(role == 'employee'){
                 $('#employee').show(1000);
                 $('#vendor').hide(1000);
+                $('#customer').hide(1000);
             } else if(role == 'admin'){
+                $('#employee').hide(1000);
+                $('#vendor').hide(1000);
+                $('#customer').hide(1000);
+            }else if(role=='customers'){
+                $('#customer').show(1000);
                 $('#employee').hide(1000);
                 $('#vendor').hide(1000);
             }

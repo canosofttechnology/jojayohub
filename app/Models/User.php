@@ -15,7 +15,7 @@ class User extends Authenticatable
             'email' => 'required|string|email|max:255|unique:users,email',
             'password' => 'required|string|min:8',
             'contact' => 'nullable|string',
-            'roles'=> 'sometimes|in:admin,vendor,employee,customer',
+            'roles'=> 'sometimes|in:admin,vendor,employee,customers',
             'image' => 'nullable|string'
         ];
         if($act !== 'add'){
