@@ -275,7 +275,8 @@ Route::group(['prefix' => 'auth', 'middleware' => ['auth']], function () {
     // vendor produt
     Route::post('/get_vendor_post','ProductController@getVendorProduct')->name('VendorProduct');
 
-    Route::get('last-payment', 'PaymentController@lastPaymentData')->name('lastPaymentData');
+    // Route::get('last-payment', 'PaymentController@lastPaymentData')->name('lastPaymentData');
+
 });
 Route::group(['middleware' => ['auth', 'customers']], function () {
     Route::get('/dashboard', function () {

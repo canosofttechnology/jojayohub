@@ -7,6 +7,7 @@ use App\Models\CategoryPermitted;
 use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\ProductCategory;
+use App\Models\Sales;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Vendor;
@@ -50,8 +51,13 @@ class UserController extends Controller
             return view('errors.403');
         $active_tab = "manage";
         $allCategories = $this->category->get();
-        $allUsers = $this->user->where('roles', '!=', 'customers')->get();
-        return view('admin.pages.users', compact('allUsers', 'active_tab', 'allCategories'));
+
+        $allUsers = $this->user->where('roles', 'vendor')->get();
+        $customer_lists = $this->user->where('roles', 'customers')->get();
+        $employees = $this->user->where('roles', 'admin')->orWhere('roles', 'employee')->get();
+        // $allUsers = $this->user->where('roles', '!=', 'customers')->get();
+        // dd($employees);
+        return view('admin.pages.users', compact('allUsers', 'active_tab', 'allCategories', 'customer_lists', 'employees'));
     }
 
     /**
@@ -484,16 +490,33 @@ class UserController extends Controller
         $employee_data = null;
         $vendor_data = null;
         $permitted = null;
-        $allCategories=null;
-        if ($data->roles == 'vendor') {
+        $allCategories = null;
+        $vendor_sales = null;
+        $customer_purchase = null;
+        $role = $data->roles;
+        if ($role == 'vendor') {
             $vendor_data = $this->vendor->with('categoryAssigned')->where('user_id', $user_id)->first();
             if (isset($vendor_data)) {
                 $allCategories = $this->category->get();
                 $permitted = $this->category_permitted->where('vendor_id', $vendor_data->id)->get();
+                $vendor_sales = Sales::with('reTailer')->where('vendor_id', $vendor_data->id)->get();
+                // dd($vendor_sales);
             }
-        } elseif ($data->roles ==  'employee') {
+        } elseif ($role ==  'employee') {
             $employee_data = $this->employee->where('user_id', $user_id)->first();
         }
-        return view('admin.user.info.user_info', compact('data', 'employee_data', 'vendor_data', 'permitted','allCategories'));
+        if ($role == 'customers') {
+            $customer_purchase = Sales::with('vendor')->where('retailer_id', $user_id)->get();
+        }
+        return view('admin.user.info.user_info', compact('data', 'employee_data', 'vendor_data', 'permitted', 'allCategories', 'vendor_sales', 'customer_purchase'));
+    }
+
+    public function vendor()
+    {
+        return $this->user->where('roles', 'vendor')->get();
+    }
+    public function customer()
+    {
+        return $this->user->where('roles', 'customers')->get();
     }
 }

@@ -40,10 +40,15 @@ class Sales extends Model
     }
 
     public function reTailer(){
+
         return $this->belongsTo('App\User', 'retailer_id');
     }
 
     public function vendor(){
         return $this->belongsTo('App\Models\Vendor', 'vendor_id');
     }
+
+//     public function retailer(){
+//         return $this->belongsTo(User::class,'retailer_id','id');
+//     }
 }

@@ -6,7 +6,9 @@
          <div class="col-sm-22">
             <div class="nav-tabs-custom">
                <ul class="nav nav-tabs">
-                  <li class="@if($active_tab == 'manage') active @endif"><a href="#manage" data-toggle="tab">All Users</a></li>
+                  <li class="@if($active_tab == 'manage') active @endif"><a href="#manage" data-toggle="tab">Vendors</a></li>
+                  <li class=""><a href="#customers" data-toggle="tab">Customer</a></li>
+                  <li class=""><a href="#employees-tab" data-toggle="tab">Employee</a></li>
                   <li class="@if($active_tab == 'create') active @endif"><a href="#create" data-toggle="tab">New User</a></li>
                   <input type="hidden" id="base" value="{{ route('ajax.users') }}">
                </ul>
@@ -55,6 +57,98 @@
                     </table>
                      </div>
                   </div>
+
+                  <div class="tab-pane" id="customers">
+                     <div class="table-responsive">
+                     <table class="table table-striped table-bordered nowrap datatable_action" role="grid" aria-describedby="basic-col-reorder_info">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Image</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(!empty($customer_lists)) @foreach($customer_lists as $customer)
+                            <tr id="{{ $customer->id }}">
+                                <td><input type="checkbox" name="delete_items" value="{{ $customer->id }}"></td>
+                                <td>
+                                <a href="{{ route('user.info',$customer->id)}}">{{ $customer->name }}</a>
+                                </td>
+                                <td>{{ $customer->email }}</td>
+                                <td>{{ $customer->roles }}</td>
+                                <td><a href="{{ $customer->image }}" class="iframe-btn">View Profile Image</a></td>
+                                <td>
+                                    <a href="{{ route('users.edit', $customer->id) }}" class="btn btn-primary btn-xs" style="margin-right: 5px">
+                                        <i class="fa fa-pencil-square-o"></i>
+                                    </a>
+                                    @if (Auth::user()->roles=='admin')
+                                    <a style="display:inline-block" onclick="return confirm('Are you sure you want to delete this user?')">
+                                        <form method="POST" action="{{ route('users.destroy', $customer->id) }}" accept-charset="UTF-8">
+                                            <input name="_method" type="hidden" value="DELETE">
+                                            <input name="_token" type="hidden" value="{{ csrf_token() }}">
+                                            <button class="btn btn-danger btn-xs" type="submit"><i class="fa fa-trash-o"></i></button>
+                                        </form>
+                                    </a>
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                            @endif
+                        </tbody>
+                    </table>
+                     </div>
+                  </div>
+
+                  <div class="tab-pane" id="employees-tab">
+                    <div class="table-responsive">
+                    <table class="table table-striped table-bordered nowrap datatable_action" role="grid" aria-describedby="basic-col-reorder_info">
+                       <thead>
+                           <tr>
+                               <th></th>
+                               <th>Name</th>
+                               <th>Email</th>
+                               <th>Role</th>
+                               <th>Image</th>
+                               <th>Action</th>
+                           </tr>
+                       </thead>
+                       <tbody>
+
+                           @if(!empty($employees)) @foreach($employees as $employee)
+                           <tr id="{{ $employee->id }}">
+                               <td><input type="checkbox" name="delete_items" value="{{ $employee->id }}"></td>
+                               <td>
+                               <a href="{{ route('user.info',$employee->id)}}">{{ $employee->name }}</a>
+                               </td>
+                               <td>{{ $employee->email }}</td>
+                               <td>{{ $employee->roles }}</td>
+                               <td><a href="{{ $employee->image }}" class="iframe-btn">View Profile Image</a></td>
+                               <td>
+                                   <a href="{{ route('users.edit', $employee->id) }}" class="btn btn-primary btn-xs" style="margin-right: 5px">
+                                       <i class="fa fa-pencil-square-o"></i>
+                                   </a>
+                                   @if (Auth::user()->roles=='admin')
+                                   <a style="display:inline-block" onclick="return confirm('Are you sure you want to delete this user?')">
+                                       <form method="POST" action="{{ route('users.destroy', $employee->id) }}" accept-charset="UTF-8">
+                                           <input name="_method" type="hidden" value="DELETE">
+                                           <input name="_token" type="hidden" value="{{ csrf_token() }}">
+                                           <button class="btn btn-danger btn-xs" type="submit"><i class="fa fa-trash-o"></i></button>
+                                       </form>
+                                   </a>
+                                   @endif
+                               </td>
+                           </tr>
+                           @endforeach
+                           @endif
+                       </tbody>
+                   </table>
+                    </div>
+                 </div>
+
                   <div class="tab-pane @if($active_tab == 'create') active @endif" id="create">
                     @if (Auth::user()->roles=='admin')
                   @if(!empty(@$data))
