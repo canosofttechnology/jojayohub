@@ -28,7 +28,9 @@
                             @if(!empty($allUsers)) @foreach($allUsers as $userLists)
                             <tr id="{{ $userLists->id }}">
                                 <td><input type="checkbox" name="delete_items" value="{{ $userLists->id }}"></td>
-                                <td>{{ $userLists->name }}</td>
+                                <td>
+                                <a href="{{ route('user.info',$userLists->id)}}">{{ $userLists->name }}</a>
+                                </td>
                                 <td>{{ $userLists->email }}</td>
                                 <td>{{ $userLists->roles }}</td>
                                 <td><a href="{{ $userLists->image }}" class="iframe-btn">View Profile Image</a></td>
@@ -36,6 +38,7 @@
                                     <a href="{{ route('users.edit', $userLists->id) }}" class="btn btn-primary btn-xs" style="margin-right: 5px">
                                         <i class="fa fa-pencil-square-o"></i>
                                     </a>
+                                    @if (Auth::user()->roles=='admin')
                                     <a style="display:inline-block" onclick="return confirm('Are you sure you want to delete this user?')">
                                         <form method="POST" action="{{ route('users.destroy', $userLists->id) }}" accept-charset="UTF-8">
                                             <input name="_method" type="hidden" value="DELETE">
@@ -43,15 +46,17 @@
                                             <button class="btn btn-danger btn-xs" type="submit"><i class="fa fa-trash-o"></i></button>
                                         </form>
                                     </a>
+                                    @endif
                                 </td>
                             </tr>
-                            @endforeach 
+                            @endforeach
                             @endif
                         </tbody>
                     </table>
                      </div>
                   </div>
                   <div class="tab-pane @if($active_tab == 'create') active @endif" id="create">
+                    @if (Auth::user()->roles=='admin')
                   @if(!empty(@$data))
                         {{ Form::open(['url'=>route('users.update', @$data->id), 'class'=>'form-horizontal', 'id'=>'user_add', 'files'=>true,'method'=>'patch']) }}
                         <input name="_method" type="hidden" value="PATCH">
@@ -62,7 +67,7 @@
                             <div class="page-body">
                                 <div class="row">
                                     <div class="col-lg-12 col-md-12 col-sm-22">
-                                        <div class="card">                                            
+                                        <div class="card">
                                             <div class="card-block">
                                                 <div class="form-group row">
                                                     <label class="col-sm-2 control-label"><strong>Fullname</strong> <span class="text-danger">*</span></label>
@@ -80,21 +85,21 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
-                                                    <label class="col-sm-2 control-label"><strong>Password</strong> <span class="text-danger">*</span></label>                                                    
+                                                    <label class="col-sm-2 control-label"><strong>Password</strong> <span class="text-danger">*</span></label>
                                                     <div class="col-sm-8">
                                                         <input type="password" class="form-control" value="" name="password" id="password" placeholder="Type here only if you want to change the password">
                                                         <span class="messages"></span>
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
-                                                    <label class="col-sm-2 control-label"><strong>Contact</strong> <span class="text-danger">*</span></label>                                                    
+                                                    <label class="col-sm-2 control-label"><strong>Contact</strong> <span class="text-danger">*</span></label>
                                                     <div class="col-sm-8">
                                                         <input type="number" class="form-control" value="{{ @$data->contact }}" name="contact" id="contact" placeholder="Contact number">
                                                         <span class="messages"></span>
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
-                                                    <label class="col-sm-2 control-label"><strong>Role</strong> <span class="text-danger">*</span></label>                                                                                                        
+                                                    <label class="col-sm-2 control-label"><strong>Role</strong> <span class="text-danger">*</span></label>
                                                     <div class="col-sm-8">
                                                         <select name="roles" id="role" class="form-control">
                                                             <option selected disabled>--Select user type--</option>
@@ -107,7 +112,7 @@
 
                                                 <div id="vendor">
                                                     <div class="form-group row">
-                                                        <label class="col-sm-2 control-label"><strong>Company</strong> <span class="text-danger">*</span></label>                                                                                                                                                                
+                                                        <label class="col-sm-2 control-label"><strong>Company</strong> <span class="text-danger">*</span></label>
                                                         <div class="col-sm-8">
                                                             <input type="text" class="form-control" value="{{ @$vendor_data->company }}" name="company" id="company" placeholder="Name of the company">
                                                             <span class="messages"></span>
@@ -127,25 +132,25 @@
                                                             <span class="messages"></span>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     <div class="form-group row">
                                                         <label class="col-sm-2 control-label"><strong>Categories</strong> <span class="text-danger">*</span></label>
-                                                        <div class="col-sm-8"> 
+                                                        <div class="col-sm-8">
                                                             <select class="form-control select_box select2-hidden-accessible" name="categories[]" multiple="multiple">
                                                                 <?php
-                                                                if($allCategories){ 
+                                                                if($allCategories){
                                                                     foreach ($allCategories as $categoryList){
-                                                                        $checked = ''; 
+                                                                        $checked = '';
                                                                         if(!empty($permitted)){
                                                                             if (is_array($permitted) || is_object($permitted)) {
-                                                                            foreach ($permitted as $key => $value) { 
+                                                                            foreach ($permitted as $key => $value) {
                                                                             if($categoryList->id == $value['category_id']){
                                                                             $checked = 'selected';
                                                                             break;
-                                                                            } 
+                                                                            }
                                                                         }
                                                                         }
-                                                                        } 
+                                                                        }
                                                                         ?>
                                                                         <option value="{{ $categoryList->id }}" {{ $checked}}>{{ $categoryList->name }}</option>
                                                                         <?php
@@ -168,9 +173,9 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <div id="employee">
-                                                    <div class="form-group row">                                                        
+                                                    <div class="form-group row">
                                                         <label class="col-sm-2 control-label"><strong>Address</strong> <span class="text-danger">*</span></label>
                                                         <div class="col-sm-8">
                                                             <input type="text" class="form-control" value="{{ @$employee_data->address }}" name="address" id="address" placeholder="Addresss">
@@ -201,9 +206,9 @@
                                                             </select>
                                                         </div>
                                                     </div>
-                                                </div>                                                
+                                                </div>
                                                 <div class="form-group">
-                                                    <label class="col-sm-2 control-label"></label>          
+                                                    <label class="col-sm-2 control-label"></label>
                                                     <div class="col-sm-3">
                                                         <div class="fileinput fileinput-new" data-provides="fileinput">
                                                             <div class="fileinput-new thumbnail" style="width: 210px;">
@@ -251,6 +256,9 @@
                                 </div>
                             </div>
                         </form>
+                        @else
+                            <h3>Sorry, You have't permission to create user.</h3>
+                        @endif
                   </div>
                </div>
             </div>
@@ -274,7 +282,7 @@
             $('#vendor').hide();
             $('#employee').hide();
         }
-                
+
         $("#name").keyup(function (){
             let Slug = $('#name').val();
             document.getElementById("slug").value = convertToSlug(Slug);

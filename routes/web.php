@@ -13,6 +13,9 @@
 
 // Auth Login
 
+Route::get('mail', function () {
+    return view('mail');
+});
 
 
 Route::get('logout', 'Auth\LoginController@logout', function () {
@@ -21,16 +24,16 @@ Route::get('logout', 'Auth\LoginController@logout', function () {
 
 Route::get('/', 'FrontController@index');
 
-Route::get('/login', function(){
-    if(Auth::user() && Auth::user()->roles == 'customers'){
+Route::get('/login', function () {
+    if (Auth::user() && Auth::user()->roles == 'customers') {
         return redirect('/dashboard');
     } else {
         return view('frontend.pages.login');
     }
 })->name('signinform');
 
-Route::get('/signup', function(){
-    if(Auth::user()->roles == 'customers'){
+Route::get('/signup', function () {
+    if (Auth::user()->roles == 'customers') {
         return redirect('/dashboard');
     } else {
         return view('frontend.pages.signup');
@@ -102,8 +105,8 @@ Route::post('/customer/signup', 'UserController@customerSignUp')->name('customer
 
 Route::patch('user-edit/{id}', 'UserController@UpdateUser')->name('update_user');
 
-Route::get('/cart', function(){
-  return view('frontend.pages.cart');
+Route::get('/cart', function () {
+    return view('frontend.pages.cart');
 });
 
 Route::get('/review', 'FrontController@review');
@@ -165,21 +168,21 @@ Route::get('/get_cart_content/', 'FrontController@cartContent')->name('cart.cont
 
 Route::get('/get_cart_count/', 'CartController@cartCount')->name('cart.count');
 
-Route::group(['prefix' => 'auth', 'middleware' => ['auth']], function() {
+Route::group(['prefix' => 'auth', 'middleware' => ['auth']], function () {
 
     Route::get('/expenses', 'ProductExpenseController@index')->name('record-list');
 
-    Route::get('/dashboard', function(){
+    Route::get('/dashboard', function () {
         return view('admin.pages.index');
     });
 
-    Route::get('/media', function(){
+    Route::get('/media', function () {
         return view('admin.pages.fileupload');
     });
 
     Route::get('/expense-edit/{id}', 'ProductExpenseController@edit')->name('expense_edit');
 
-    Route::match(['put', 'patch'], '/expense-update/{id}','ProductExpenseController@update')->name('expense_update');
+    Route::match(['put', 'patch'], '/expense-update/{id}', 'ProductExpenseController@update')->name('expense_update');
 
     Route::resource('sales', 'SalesController');
 
@@ -203,9 +206,9 @@ Route::group(['prefix' => 'auth', 'middleware' => ['auth']], function() {
 
     Route::get('postparentcategories', 'CategoryController@getParentController')->name('postparentCategories');
 
-    Route::get('last-post','CategoryController@lastData')->name('lastPost');
+    Route::get('last-post', 'CategoryController@lastData')->name('lastPost');
 
-    Route::get('last','ProductCategoryController@lastData')->name('lastData');
+    Route::get('last', 'ProductCategoryController@lastData')->name('lastData');
 
     Route::get('/categoryedit/{slug}', 'ProductCategoryController@editCategory')->name('editCategory');
 
@@ -213,17 +216,19 @@ Route::group(['prefix' => 'auth', 'middleware' => ['auth']], function() {
 
     Route::get('/brandedit/{slug}', 'BrandController@editBrand')->name('editBrand');
 
-    Route::resource('products','ProductController');
+    Route::resource('products', 'ProductController');
 
-    Route::resource('brands','BrandController');
+    Route::resource('brands', 'BrandController');
 
-    Route::resource('sizes','SizeController');
+    Route::resource('sizes', 'SizeController');
 
-    Route::resource('attributes','ProductAttributeController');
+    Route::resource('attributes', 'ProductAttributeController');
 
-    Route::resource('product_categories','ProductCategoryController');
+    Route::resource('product_categories', 'ProductCategoryController');
 
     Route::resource('users', 'UserController');
+    Route::post('user/{user_id}/update', 'UserController@updateProfile')->name('user.profile');
+    Route::get('user/{user_id}/info', 'UserController@userInfo')->name('user.info');
 
     Route::resource('blogs', 'BlogController');
 
@@ -239,7 +244,7 @@ Route::group(['prefix' => 'auth', 'middleware' => ['auth']], function() {
 
     Route::resource('brands', 'BrandController');
 
-    Route::get('brandlast','BrandController@brandLastData')->name('brandLastData');
+    Route::get('brandlast', 'BrandController@brandLastData')->name('brandLastData');
 
     Route::resource('sizes', 'SizeController');
 
@@ -255,29 +260,29 @@ Route::group(['prefix' => 'auth', 'middleware' => ['auth']], function() {
 
     Route::resource('settings', 'SensitiveDataController')->middleware('admin');
 
-    Route::get('/primary_last','PrimaryCategoryController@lastData')->name('PrimarylastData');
+    Route::get('/primary_last', 'PrimaryCategoryController@lastData')->name('PrimarylastData');
 
     Route::get('/primary_category_edit/{slug}', 'PrimaryCategoryController@editPrimaryCategory')->name('editPrimaryCategory');
 
     Route::get('primarycategories', 'PrimaryCategoryController@getPrimaryController')->name('primaryCategories');
 
-    Route::get('/secondary_last','SecondaryCategoryController@lastData')->name('SecondarylastData');
+    Route::get('/secondary_last', 'SecondaryCategoryController@lastData')->name('SecondarylastData');
 
     Route::get('/secondary_category_edit/{slug}', 'SecondaryCategoryController@editSecondaryCategory')->name('editSecondaryCategory');
 
-    Route::get('last-payment','PaymentController@lastPaymentData')->name('lastPaymentData');
+    // Route::get('last-payment','PaymentController@lastPaymentData')->name('lastPaymentData');
 
     // vendor produt
     Route::post('/get_vendor_post','ProductController@getVendorProduct')->name('VendorProduct');
 
+    Route::get('last-payment', 'PaymentController@lastPaymentData')->name('lastPaymentData');
 });
-
-Route::group(['middleware' => ['auth', 'customers']], function() {
-    Route::get('/dashboard', function(){
+Route::group(['middleware' => ['auth', 'customers']], function () {
+    Route::get('/dashboard', function () {
         return view('frontend.pages.dashboard');
     });
 
-    Route::get('/account-information', function(){
+    Route::get('/account-information', function () {
         return view('frontend.pages.account-information');
     });
 
@@ -290,14 +295,14 @@ Route::group(['middleware' => ['auth', 'customers']], function() {
     Route::get('/shipping', 'FrontController@shipping');
 });
 
-Route::group(['prefix' => 'vendor', 'middleware' => ['auth', 'vendor']], function() {
-    Route::get('/dashboard', function(){
+Route::group(['prefix' => 'vendor', 'middleware' => ['auth', 'vendor']], function () {
+    Route::get('/dashboard', function () {
         return view('admin.pages.index');
     });
 });
 
-Route::group(['prefix' => 'employee', 'middleware' => ['auth', 'employee']], function() {
-    Route::get('/dashboard', function(){
+Route::group(['prefix' => 'employee', 'middleware' => ['auth', 'employee']], function () {
+    Route::get('/dashboard', function () {
         return view('admin.pages.index');
     });
 });

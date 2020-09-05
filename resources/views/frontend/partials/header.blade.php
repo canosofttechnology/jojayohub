@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-   
+
    <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -20,7 +20,7 @@
       <link rel="stylesheet" href="/frontend/css/all.min.css">
       <!-- font - stroyka -->
       <link rel="stylesheet" href="/frontend/css/stroyka.css">
-      
+
    </head>
    <body>
       <!-- site -->
@@ -101,7 +101,7 @@
          <header class="site__header d-lg-block d-none">
             <div class="site-header">
                <!-- .topbar -->
-               
+
                <!-- .topbar / end -->
                <div class="site-header__middle container">
                   <div class="site-header__logo">
@@ -114,7 +114,7 @@
                   <div class="site-header__search">
                      <div class="search search--location--header">
                         <div class="search__body">
-                           <form class="search__form" action="#">                              
+                           <form class="search__form" action="#">
                               <input class="search__input" name="search" placeholder="Search over 10,000 products" aria-label="Site search" type="text" autocomplete="off">
                               <button class="search__button search__button--type--submit" type="submit">
                                  <svg width="20px" height="20px">
@@ -155,7 +155,7 @@
                                        @if($prime->secondaryCategories->count() > 0)
                                           <li class="departments__item">
                                              <a class="departments__item-link" href="#">
-                                             {{ $prime->name }} 
+                                             {{ $prime->name }}
                                                 <svg class="departments__item-arrow" width="6px" height="9px">
                                                    <use xlink:href="/frontend/images/sprite.svg#arrow-rounded-right-6x9"></use>
                                                 </svg>
@@ -190,7 +190,7 @@
                                                                   $final_cat->name = str_replace("Women's", "", $final_cat->name);
                                                                   $final_cat->name = str_replace("Men's", "", $final_cat->name);
                                                                   ?>
-                                                                  <li class="menu__item">                                                                     
+                                                                  <li class="menu__item">
                                                                      <div class="menu__item-submenu-offset"></div>
                                                                      <a class="menu__item-link" href="{{ route('categories', $final_cat->slug) }}">{{ $final_cat->name }}</a>
                                                                   </li>
@@ -223,7 +223,7 @@
                                     <svg class="departments__button-icon" width="18px" height="14px">
                                        <use xlink:href="/frontend/images/sprite.svg#menu-18x14"></use>
                                     </svg>
-                                    Shop By Category 
+                                    Shop By Category
                                     <svg class="departments__button-arrow" width="9px" height="6px">
                                        <use xlink:href="/frontend/images/sprite.svg#arrow-rounded-down-9x6"></use>
                                     </svg>
@@ -252,7 +252,7 @@
                                     </a>
                                  </li>
                                  @endforeach
-                                 @endif                                 
+                                 @endif
                               </ul>
                            </div>
                            <!-- .nav-links / end -->
@@ -277,7 +277,7 @@
                                     </span>
                                  </a>
                                  <div class="indicator__dropdown">
-                                    
+
                                     <div class="dropcart dropcart--style--dropdown">
                                        <div class="dropcart__body">
                                           <div class="dropcart__products-list">
@@ -286,7 +286,7 @@
                                              <div class="dropcart__product">
                                                 <div class="product-image dropcart__product-image"><a href="{{ route('single-product', $row->options->slug) }}" class="product-image__body"><img class="product-image__img" src="{{ $row->options->image }}" alt="" style="width:70px"></a></div>
                                                 <div class="dropcart__product-info">
-                                                   <div class="dropcart__product-name"><a href="{{ route('single-product', $row->options->slug) }}">{{ $row->name }}</a></div>                                                   
+                                                   <div class="dropcart__product-name"><a href="{{ route('single-product', $row->options->slug) }}">{{ $row->name }}</a></div>
                                                    <div class="dropcart__product-meta"></div>
                                                 </div>
                                                 <button type="button" class="dropcart__product-remove btn btn-light btn-sm btn-svg-icon">
@@ -303,7 +303,7 @@
                                     </div>
                                  </div>
                               </div>
-                              
+
                               <div class="indicator indicator--trigger--click">
                                  <a href="account-login.html" class="indicator__button">
                                     <span class="indicator__area">
@@ -314,7 +314,7 @@
                                  </a>
                                  <div class="indicator__dropdown">
                                     <div class="account-menu">
-                                       
+
                                        @if(!empty(Auth::user()) && Auth::user()->roles == 'customers')
                                        <div class="account-menu__divider"></div>
                                        <a href="account-dashboard.html" class="account-menu__user">
@@ -339,7 +339,7 @@
                                        <form class="account-menu__form" action="{{ route('customerlogin') }}" method="POST">
                                           @csrf
                                           <div class="account-menu__form-title">Log In to Your Account</div>
-                                          <div class="form-group"><label for="header-signin-email" class="sr-only">Email address</label> 
+                                          <div class="form-group"><label for="header-signin-email" class="sr-only">Email address</label>
                                           <input id="header-signin-email" type="email" class="form-control form-control-sm" placeholder="Email address" name="email"></div>
                                           <div class="form-group">
                                              <label for="header-signin-password" class="sr-only">Password</label>

@@ -17,9 +17,11 @@
                         <thead>
                             <tr>
                                 <th>Vendor</th>
+                                <th>Sold To</th>
                                 <th>Product</th>
                                 <th>Sales Quantity</th>
                                 <th>Price</th>
+                                <th>Invoice No</th>
                                 <th>Sold At</th>
                                 <th>Entry date</th>
                             </tr>
@@ -28,10 +30,12 @@
                             @if($sales_list)
                                 @foreach($sales_list as $saleList)
                                     <tr>
-                                        <td>Vednor</td>
-                                        <td>{{ $saleList->productName->name }}</td>
+                                        <td>{{ $saleList->vendor->company }}</td>
+                                        <td>{{ @$saleList->reTailer->name }}</td>
+                                        <td>{{ @$saleList->productName->name }}</td>
                                         <td>{{ $saleList->quantity }}</td>
                                         <td>{{ $saleList->price }}</td>
+                                        <td>{{ $saleList->invoice }}</td>
                                         <td>{{ $saleList->date }}</td>
                                         <td>{{ $saleList->created_at }}</td>
                                     </tr>
@@ -107,9 +111,13 @@
                                             <label for="slug" class="block">Type</label>
                                         </div>
                                         <div class="col-md-8 col-lg-10">
-                                            <select name="type" id="type" class="form-control">
-                                                <option value="sales">Sales</option>
-                                                <option value="purchase">Purchase</option>
+                                            <select name="retailer_id" id="retailer_id" class="form-control">
+                                                <option>--Select Retailer--</option>
+                                                @if(!empty($retailer_list))
+                                                    @foreach($retailer_list as $retailers)
+                                                    <option value="{{ $retailers->id }}">{{ $retailers->name }}</option>
+                                                    @endforeach
+                                                @endif
                                             </select>
                                         </div>
                                     </div>
@@ -119,6 +127,22 @@
                                         </div>
                                         <div class="col-md-8 col-lg-10">
                                             <input type="datetime-local" class="form-control" name="date">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-4 col-lg-2">
+                                            <label for="slug" class="block">Sold at</label>
+                                        </div>
+                                        <div class="col-md-8 col-lg-10">
+                                            <input type="number" class="form-control" name="sold_price">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-4 col-lg-2">
+                                            <label for="slug" class="block">Remarks</label>
+                                        </div>
+                                        <div class="col-md-8 col-lg-10">
+                                            <textarea class="form-control" name="remarks"></textarea>
                                         </div>
                                     </div>
                                     <div class="form-group row">

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Sales extends Model
 {
-    protected $fillable = ['product_id', 'discount', 'price', 'quantity', 'date', 'vendor_id'];
+    protected $fillable = ['product_id', 'discount', 'price', 'quantity', 'date', 'vendor_id','retailer_id','remarks','sold_price','invoice'];
 
     public function getRules(){
         $rules = [
@@ -16,6 +16,9 @@ class Sales extends Model
             'discount' => 'nullable|string',
             'quantity' => 'required|string',
             'date' => 'required|string',
+            'retailer_id' => 'required|exists:users,id',
+            'remarks' => 'required|string',
+            'sold_price' => 'required|numeric',
         ];
         return $rules;
     }
@@ -36,4 +39,11 @@ class Sales extends Model
         return $this->belongsTo('App\Models\Size', 'size_id');
     }
 
+    public function reTailer(){
+        return $this->belongsTo('App\User', 'retailer_id');
+    }
+
+    public function vendor(){
+        return $this->belongsTo('App\Models\Vendor', 'vendor_id');
+    }
 }

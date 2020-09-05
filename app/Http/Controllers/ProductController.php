@@ -67,12 +67,12 @@ class ProductController extends Controller
      */
     public function index()
     {
-        if(auth()->user()->roles == 'admin' || auth()->user()->roles == 'employee'){            
+        if(auth()->user()->roles == 'admin' || auth()->user()->roles == 'employee'){
             $allProducts = $this->product->orderBy('created_at', 'desc')->get();
         } else{
             $vendor_data = $this->vendors->where('user_id', auth()->user()->id)->pluck('id')->first();
             $allProducts = $this->product->where('vendor_id', $vendor_data)->orderBy('created_at', 'desc')->get();
-        } 
+        }
         $allProducts = $this->product->orderBy('created_at', 'desc')->get();
         $active_tab = "manage";
         $brands = $this->brand->get();
@@ -91,7 +91,7 @@ class ProductController extends Controller
     public function create()
     {
         $allProducts = $this->product->orderBy('created_at', 'desc')->get();
-        $active_tab = "create";        
+        $active_tab = "create";
         $brands = $this->brand->get();
         $category = $this->product_categories->get();
         $vendor_list = $this->vendors->get();
@@ -133,7 +133,7 @@ class ProductController extends Controller
                     $extension = pathinfo($images[$j], PATHINFO_EXTENSION);
                     $path = public_path().'/uploads/products/';
                     $name = ucfirst('Product').'-'.date('Ymdhis').rand(0,999).".".$extension;
-                    $file_name = $path.$name;                
+                    $file_name = $path.$name;
                     $validator = Validator::make($request->only(['product_id', 'image', 'imageColor']), [
                     'image' => 'required',
                     ]);
@@ -153,8 +153,8 @@ class ProductController extends Controller
                     $product_image->save();
                     $j++;
                 }
-                    
-            } elseif($request->hasFile('images')){                
+
+            } elseif($request->hasFile('images')){
                 for($j = 0; $j < count($request->images);){
                     $pro_image = uploadImage($request->images[$j], 'products', '1920x930');
                     $product_image = new productImages();
@@ -163,7 +163,7 @@ class ProductController extends Controller
                     $product_image->fill($image_data);
                     $product_image->save();
                     $j++;
-                }                
+                }
             } else {
                $notification = array(
                     'message' => 'Please upload images for this product.',
@@ -196,11 +196,11 @@ class ProductController extends Controller
                     }
                     for($i = 0; $i < count($request->color); $i++){
                         $product_set = new ColorDetail();
-                        $set_data['product_id'] = $product_id;                        
+                        $set_data['product_id'] = $product_id;
                         $set_data['color_id'] = $request->color[$i];
                         $product_set->fill($set_data);
                         $data_set = $product_set->save();
-                        $product_color_id = $product_set->id; 
+                        $product_color_id = $product_set->id;
                         for($s = 0; $s < count($request->size); $s++){
                             $size_detail = new SizeDetail();
                             $size_data['product_id'] = $product_id;
@@ -209,8 +209,8 @@ class ProductController extends Controller
                             $data_size = $size_detail->save();
                         }
                     }
-                    
-                    
+
+
                 }
             for($i = 0; $i < count($request->price); $i++){
                 $product_price = new Set();
@@ -232,7 +232,7 @@ class ProductController extends Controller
                 } else {
                     $attr_detail['attribute_value_id'] = null;
                     $attr_detail['attribute_value'] = $val;
-                }                
+                }
                 $attr_data->fill($attr_detail);
                 $attr_size = $attr_data->save();
             }
@@ -335,25 +335,25 @@ class ProductController extends Controller
         $this->product->fill($data);
         $success = $this->product->save();
         $product_id = $this->product->id;
-        if($success){ 
+        if($success){
             if(!empty($request->color)){
                 $color_to_delete = $this->color_detail->where('product_id', $id)->get()->toArray();
                 $ids_to_delete = array_map(function($item){ return $item['id']; }, $color_to_delete);
-                DB::table('color_details')->whereIn('id', $ids_to_delete)->delete();            
-                for($i = 0; $i < count($request->color); $i++){                    
+                DB::table('color_details')->whereIn('id', $ids_to_delete)->delete();
+                for($i = 0; $i < count($request->color); $i++){
                     $product_set = new ColorDetail();
-                    $set_data['product_id'] = $product_id;                        
+                    $set_data['product_id'] = $product_id;
                     $set_data['color_id'] = $request->color[$i];
                     $product_set->fill($set_data);
                     $data_set = $product_set->save();
-                    $product_color_id = $product_set->id;                    
+                    $product_color_id = $product_set->id;
                 }
             }
-            if(!empty($request->size)){ 
+            if(!empty($request->size)){
                 $size_to_delete = $this->size_detail->where('product_id', $id)->get()->toArray();
                 $ids_to_delete = array_map(function($item){ return $item['id']; }, $size_to_delete);
                 DB::table('size_details')->whereIn('id', $ids_to_delete)->delete();
-                for($s = 0; $s < count($request->size); $s++){                    
+                for($s = 0; $s < count($request->size); $s++){
                     $size_detail = new SizeDetail();
                     $size_data['product_id'] = $product_id;
                     $size_data['size_id'] = $request->size[$s];
@@ -361,7 +361,7 @@ class ProductController extends Controller
                     $data_size = $size_detail->save();
                 }
             }
-            // }          
+            // }
             if(!empty($request->image)){
                 $images_to_delete = $this->product_image->where('product_id', $id)->get()->toArray();
                 $ids_to_delete = array_map(function($item){ return $item['id']; }, $images_to_delete);
@@ -374,7 +374,7 @@ class ProductController extends Controller
                     $extension = pathinfo($images[$j], PATHINFO_EXTENSION);
                     $path = public_path().'/uploads/products/';
                     $name = ucfirst('Product').'-'.date('Ymdhis').rand(0,999).".".$extension;
-                    $file_name = $path.$name;                
+                    $file_name = $path.$name;
                     $validator = Validator::make($request->only(['product_id', 'image', 'imageColor']), [
                     'image' => 'required',
                     ]);
@@ -400,14 +400,14 @@ class ProductController extends Controller
                         {
                             unlink(public_path().'/uploads/products/'.$del_image);
                             unlink(public_path().'/uploads/products/Thumb-'.$del_image);
-                        } 
+                        }
                     }
-                }                  
+                }
             }
             elseif($request->hasFile('images')){
                 $images_to_delete = $this->product_image->where('product_id', $id)->get()->toArray();
                 $ids_to_delete = array_map(function($item){ return $item['id']; }, $images_to_delete);
-                DB::table('product_images')->whereIn('id', $ids_to_delete)->delete();                           
+                DB::table('product_images')->whereIn('id', $ids_to_delete)->delete();
                 for($j = 0; $j < count($request->images);){
                     $pro_image = uploadImage($request->images[$j], 'products', '1920x930');
                     $product_image = new productImages();
@@ -425,12 +425,12 @@ class ProductController extends Controller
                     }
                     $m++;
                 }
-                
-            }            
-            if(!empty($request->price)){                 
+
+            }
+            if(!empty($request->price)){
                 $set_to_delete = $this->set->where('product_id', $id)->get()->toArray();
                 $ids_to_delete = array_map(function($item){ return $item['id']; }, $set_to_delete);
-                DB::table('sets')->whereIn('id', $ids_to_delete)->delete();               
+                DB::table('sets')->whereIn('id', $ids_to_delete)->delete();
                 for($i = 0; $i < count($request->price); $i++){
                     $product_price = new Set();
                     $price_data['product_id'] = $product_id;
@@ -447,7 +447,7 @@ class ProductController extends Controller
                 foreach($request->attr as $key => $val){
                     $attr_to_delete = $this->attribute_value->where('product_id', $id)->get()->toArray();
                     $ids_to_delete = array_map(function($item){ return $item['id']; }, $attr_to_delete);
-                    DB::table('product_attribute_details')->whereIn('id', $ids_to_delete)->delete();  
+                    DB::table('product_attribute_details')->whereIn('id', $ids_to_delete)->delete();
                     $attr_data = new ProductAttributeDetail();
                     $attr_detail['product_id'] = $product_id;
                     $attr_detail['product_attribute_id'] = $key;
@@ -456,7 +456,7 @@ class ProductController extends Controller
                     } else {
                         $attr_detail['attribute_value_id'] = null;
                         $attr_detail['attribute_value'] = $val;
-                    }                
+                    }
                     $attr_data->fill($attr_detail);
                     $attr_size = $attr_data->save();
                 }
