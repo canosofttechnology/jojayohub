@@ -38,12 +38,14 @@
                             </svg>
                             </button>
                             <div class="owl-carousel" id="product-image">
-                            @if(!empty($data->images))
+                            @if(!empty($data->images) && count($data->images) > 0)
                             @foreach($data->images as $image_list)
                             <div class="product-image product-image--location--gallery">
                                 <a href="{{ asset('/uploads/products/'.$image_list->image) }}" data-width="100" data-height="100" class="product-image__body" target="_blank"><img class="product-image__img" src="{{ asset('/uploads/products/'.$image_list->image) }}" alt=""></a>
                             </div>
                             @endforeach
+                            @else
+                            
                             <div class="product-image product-image--location--gallery">
                                 <a href="{{ asset('/uploads/products/Thumb-no_image.png') }}" data-width="100" data-height="100" class="product-image__body" target="_blank"><img class="product-image__img" src="{{ asset('/uploads/products/Thumb-no_image.png') }}" alt=""></a>
                             </div>
@@ -52,12 +54,13 @@
                         </div>
                         <div class="product-gallery__carousel">
                             <div class="owl-carousel" id="product-carousel">
-                            @if(!empty($data->images))
+                            @if(!empty($data->images) && count($data->images) > 0)
                             @foreach($data->images as $image_list)
                             <a href="{{ asset('/uploads/products/'.$image_list->image) }}" class="product-image product-gallery__carousel-item">
-                                <div class="product-image__body"><img class="product-image__img product-gallery__carousel-image" src="{{ asset('/uploads/products/Thumb-no_image.png') }}" alt=""></div>
+                                <div class="product-image__body"><img class="product-image__img product-gallery__carousel-image" src="{{ asset('/uploads/products/'.$image_list->image) }}" alt=""></div>
                             </a>
                             @endforeach
+                            @else
                             <a href="{{ asset('/uploads/products/Thumb-no_image.png') }}" class="product-image product-gallery__carousel-item">
                                 <div class="product-image__body"><img class="product-image__img product-gallery__carousel-image" src="{{ asset('/uploads/products/Thumb-no_image.png') }}" alt=""></div>
                             </a>
@@ -68,18 +71,6 @@
                 </div>
                 <!-- .product__gallery / end --><!-- .product__info -->
                 <div class="product__info">
-                    <div class="product__wishlist-compare">
-                        <button type="button" class="btn btn-sm btn-light btn-svg-icon" data-toggle="tooltip" data-placement="right" title="Wishlist">
-                            <svg width="16px" height="16px">
-                            <use xlink:href="/frontend/images/sprite.svg#wishlist-16"></use>
-                            </svg>
-                        </button>
-                        <button type="button" class="btn btn-sm btn-light btn-svg-icon" data-toggle="tooltip" data-placement="right" title="Compare">
-                            <svg width="16px" height="16px">
-                            <use xlink:href="/frontend/images/sprite.svg#compare-16"></use>
-                            </svg>
-                        </button>
-                    </div>
                     <h1 class="product__name">{{ $data->name }}</h1>
                     <!-- <div class="product__rating">
                         <div class="product__rating-stars">
@@ -184,10 +175,8 @@
 
                 <div class="product__sidebar">
                     <div class="product__availability">Availability: <span class="text-success">In Stock</span></div>
-                    @php 
-                    $starting_price = App\Models\Set::where('product_id', $data->id)->first();
-                    @endphp
-                    <div class="product__prices">NPR {{ number_format($starting_price->price) }}</div>
+                    
+                    <div class="product__prices">Price Negotiable</div>
                     <!-- .product__options -->
                     <!-- <form class="product__options"> -->
                         @php
@@ -234,14 +223,7 @@
                                 </div>
                                 </div>
                                 <div class="product__actions-item product__actions-item--addtocart"><button class="btn btn-primary btn-lg add-cart" value="{{ $data->id }}">Add to cart</button></div>
-                                <div class="product__actions-item product__actions-item--addtocart"><button class="btn btn-primary btn-lg add-cart buy-now" value="{{ $data->id }}">Buy Now</button></div>
-                                <div class="product__actions-item product__actions-item--wishlist">
-                                <button type="button" class="btn btn-secondary btn-svg-icon btn-lg" data-toggle="tooltip" title="" data-original-title="Wishlist">
-                                    <svg width="16px" height="16px">
-                                        <use xlink:href="/frontend/images/sprite.svg#wishlist-16"></use>
-                                    </svg>
-                                </button>
-                                </div>
+                                <div class="product__actions-item product__actions-item--addtocart"><button class="btn btn-primary btn-lg add-cart buy-now" value="{{ $data->id }}">Buy Now</button></div>                                
                             </div>
                         </div>
                     <!-- </form> -->
@@ -656,9 +638,7 @@
                     } else {
                         $product_image = "no_image.png";
                     }
-                    $starting_price = App\Models\ProductSize::where('product_id', $related_products->id)->first();
-                    $old_price = @$starting_price->selling_price;
-                    $new_price = @$starting_price->selling_price - @$starting_price->discount;
+                    
                     @endphp
                     <div class="block-products-carousel__column">
                         <div class="block-products-carousel__cell">
@@ -796,77 +776,6 @@ setTimeout(function(){
  	});
 }, 3000); 
 let product_id = $('#product_id').attr('value');
-$('.ps-variant--color').on('click', function(){    
-    let color_id = $(this).attr('value');
-    $('#color_data').attr('value',color_id);
-    $.ajax({
-        method: "POST",
-        url: "/product-available-size/"+product_id,
-        data: {_token: "{{ csrf_token() }}", _method:"POST", color_id: color_id},
-        success: function(response){console.log(response);
-            $('.size_data').html('');
-            $.each(response, function(key, value) {
-                $('.size_data').append('<span>'+response[key]['name']+'</span>&nbsp; <input type="radio" class="size_id" value="'+response[key]['id']+'" name="size_id" style="width:15px">&nbsp;')
-            });
-            $('.size_id').on('click', function(){
-            let size_id = $(this).attr('value');
-            $('#size_data').attr('value', size_id);
-                $.ajax({
-                method: "POST",
-                url: "{{ route('getstock') }}",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    _method: "POST",
-                    size_id: size_id,
-                    product_id: product_id
-                },
-                success: function(response) {
-                    if(response[0]['stock'] > 0){
-                        $('#stock_available').html(response[0]['stock']);
-                        $('#selling_price').html(number_format(response[0]['selling_price']));                        
-                        if(response[0]['discount'] != null){                         
-                            discount = response[0]['selling_price'] - response[0]['discount'];
-                            $('#old_price').html(number_format(discount));
-                        } else {
-                           $('#old_price').html('');
-                        }
-                        // $('#sales_quantity').keyup(function() {
-                        //     let sales_qty = $('#sales_quantity').val();
-                        //     let total = sales_qty * response[0]['selling_price'];
-                        //     $('#price').val(total);
-                        //     if(discount !== null || discount !== 'undefined'){
-                        //         discounted = total - discount * sales_qty;
-                        //         $('#discounted_price').val(discounted);
-                        //     }
-                        // });
-                        // $('#payment_method').on('click', function(){
-                        //     let payment_method = this.value;
-                        //     $.ajax({
-                        //     method: "POST",
-                        //     url: "{{ route('getaccounts') }}",
-                        //     data: {
-                        //         _token: "{{ csrf_token() }}",
-                        //         _method: "POST",
-                        //         payment_id: payment_method
-                        //     },
-                        //     success: function(response) {
-                        //         $.each(response, function(key, value) {
-                        //             $('#account_id').append('<option value="'+response[key]['id']+'">'+response[key]['name']+'</option>');
-                        //         });
-                        //     }
-                        //     });
-                        // })
-                    } else {
-                        $('#stock').val('Product unavailable!');
-                        $('#stock').addClass('text-danger');
-                        $('#reload').fadeIn();
-                        $('#product-unavailable').hide(1000);
-                    }
-                }
-                });
-            })
-        }
-    });
-});
+// sinlge_page
 </script>
 @endsection

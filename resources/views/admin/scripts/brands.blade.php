@@ -1,16 +1,19 @@
 <script>
     $(document).ready(function () {
         /*add category*/
-        $('#submit').click(function(){
-            let name = $('#name').val();
-            let is_parent = null;
-            let slug = $('#slug').val();
-            let logo = $('#thumbnail').val();
+        $("form#data").submit(function(e) {
+           
+            // let name = $('#name').val();
+            // let is_parent = null;
+            // let slug = $('#slug').val();
+            // let logo = $('#thumbnail').val();
+            // let files = new FormData($('#files').val());
+            var formData = new FormData(this);
             $.ajax({
                 method: "POST",
                 url: "{{ route('brands.store') }}",
                 dataType: 'json',
-                data: { _token:"{{ csrf_token() }}",name:name,slug:slug, logo: logo},
+                data: {formData}, 
                 success: function(response) {
                     $('#name').val('');
                     $('#slug').val('');
@@ -36,10 +39,8 @@
                             $('#check tr:first').before(html);
                         },
                     });
-
                     $('#parentcategories').empty();
-
-                },
+                },                
                 error: function(response){
                     $('#name').val();
                     $('#slug').val();
@@ -49,6 +50,7 @@
                     });
                 }
             })
+            
         });
         /*add category*/
 

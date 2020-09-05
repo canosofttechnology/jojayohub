@@ -5,7 +5,7 @@
     <div class="row ps-form__billing-info">     
         @include('frontend.layouts.summary')
         <div class="col-lg-8 order-lg-first">
-            @if(empty(Auth::user()->id) && Auth::user()->id == null)
+            @if(empty(Auth::user()) || Auth::user() == null || Auth::user()->roles !== 'customers')
             <div class="checkout-payment">
                 <div class="shipping-address">
                 <form action="{{ route('new_order.store') }}" method="POST">
