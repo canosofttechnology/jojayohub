@@ -33,7 +33,8 @@
                             <svg class="filters-button__icon" width="16px" height="16px">
                                 <use xlink:href="/frontend/images/sprite.svg#filters-16"></use>
                             </svg>
-                            <span class="filters-button__title">Filters</span> <span class="filters-button__counter">3</span>
+                            <span class="filters-button__title">Filters</span>
+                             {{-- <span class="filters-button__counter">3</span> --}}
                         </button>
                         </div>
                         <div class="view-options__layout">
@@ -231,7 +232,7 @@
                    @if (count((array)$category_slug->FinalCategory)>0)
                        @include('frontend.pages.filters.categories')
                    @endif
-                    <div class="widget-filters__item">
+                    {{-- <div class="widget-filters__item">
                         <div class="filter filter--opened" data-collapse-item>
                         <button type="button" class="filter__title" data-collapse-trigger>
                             Categories Alt
@@ -509,7 +510,7 @@
                             </div>
                         </div>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
                 <div class="widget-filters__actions d-flex"><button class="btn btn-primary btn-sm">Filter</button> <button class="btn btn-secondary btn-sm">Reset</button></div>
             </div>
