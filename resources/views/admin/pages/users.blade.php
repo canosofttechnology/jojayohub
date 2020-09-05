@@ -150,7 +150,7 @@
                  </div>
 
                   <div class="tab-pane @if($active_tab == 'create') active @endif" id="create">
-                    {{print_r($errors->all())}}
+
                     @if (Auth::user()->roles=='admin')
                   @if(!empty(@$data))
                         {{ Form::open(['url'=>route('users.update', @$data->id), 'class'=>'form-horizontal', 'id'=>'user_add', 'files'=>true,'method'=>'patch']) }}
@@ -281,7 +281,7 @@
                                                     <div class="form-group row">
                                                         <label class="col-sm-2 control-label"><strong>Address</strong> <span class="text-danger">*</span></label>
                                                         <div class="col-sm-8">
-                                                            <input type="text" class="form-control" value="{{ @$customer_data->customer_address }}" name="vendor_address" id="address" placeholder="Addresss">
+                                                            <input type="text" class="form-control" value="{{ @$customer_data->customer_address }}" name="customer_address" id="address" placeholder="Addresss">
                                                             <span class="messages"></span>
                                                         </div>
                                                     </div>

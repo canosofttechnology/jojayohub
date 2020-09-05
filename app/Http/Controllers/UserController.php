@@ -292,13 +292,13 @@ class UserController extends Controller
             }
 
             if ($data['roles'] == 'customers') {
-                $this->vendor = $this->vendor->where('user_id', $id)->first();
+                $this->customer = $this->customer->where('user_id', $id)->first();
                 $customer_data['user_id'] = $id;
                 $customer_data['company'] = $request->company;
                 $customer_data['customer_address'] = $request->customer_address;
                 $customer_data['status'] = $request->status;
                 $this->customer->fill($customer_data);
-                $customer_data = $this->vendor->save();
+                $customer_data = $this->customer->save();
             }
 
             if ($data['roles'] == 'employee') {
@@ -523,6 +523,7 @@ class UserController extends Controller
         $allCategories = null;
         $vendor_sales = null;
         $customer_purchase = null;
+        $customer_data = null;
         $vendor_products=null;
         $role = $data->roles;
         if ($role == 'vendor') {
@@ -540,9 +541,10 @@ class UserController extends Controller
             $employee_data = $this->employee->where('user_id', $user_id)->first();
         }
         if ($role == 'customers') {
+            $customer_data = $this->customer->where('user_id', $user_id)->first();
             $customer_purchase = Sales::with('vendor')->where('retailer_id', $user_id)->get();
         }
-        return view('admin.user.info.user_info', compact('data', 'employee_data', 'vendor_data', 'permitted', 'allCategories', 'vendor_sales', 'customer_purchase','vendor_products'));
+        return view('admin.user.info.user_info', compact('data', 'employee_data', 'vendor_data', 'permitted', 'allCategories', 'vendor_sales', 'customer_purchase','vendor_products','customer_data'));
     }
 
     public function vendor()

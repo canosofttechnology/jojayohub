@@ -1,3 +1,4 @@
+
 <div class="table-responsive">
     <table class="table table-striped table-bordered datatable_action" role="grid" aria-describedby="basic-col-reorder_info">
        <thead>
@@ -27,20 +28,20 @@
              }
              @endphp
              <td><span class="{{ $class }}">{{ $productLists->status }}</span></td>
-             {{-- <td>
-                <a href="{{ route('products.edit', $productLists->id) }}" class="btn btn-primary btn-xs pull-left" style="margin-right: 5px">
-                <i class="fa fa-pencil-square-o"></i>
+             <td>
+                <a href="{{ route('user.product', [$data->id,$productLists->id]) }}" class="btn btn-primary btn-xs pull-left" style="margin-right: 5px">
+                <i class="fa fa-eye"></i>
                 </a>
-                @if (Auth::user()->roles=='admin'||Auth::user()->roles=='vendor')
-                <a class="pull-left" onclick="return confirm('Are you sure you want to delete this product?')">
+                {{-- @if (Auth::user()->roles=='admin'||Auth::user()->roles=='vendor') --}}
+                {{-- <a class="pull-left" onclick="return confirm('Are you sure you want to delete this product?')">
                    <form method="POST" action="{{ route('products.destroy', $productLists->id) }}" accept-charset="UTF-8">
                       <input name="_method" type="hidden" value="DELETE">
                       <input name="_token" type="hidden" value="{{ csrf_token() }}">
                       <button class="btn btn-danger btn-xs" type="submit"><i class="fa fa-trash-o"></i></button>
                    </form>
-                </a>
-                @endif
-             </td> --}}
+                </a> --}}
+                {{-- @endif --}}
+             </td>
           </tr>
           @endcan
           @endforeach @endif

@@ -54,6 +54,9 @@
                                             @if ($data->roles=='vendor')
                                                 @include('admin.user.info.vendor_info')
                                             @endif
+                                            @if ($data->roles=='customers')
+                                                @include('admin.user.info.customer_info')
+                                            @endif
 
                                             <div class="form-group">
                                                 <label class="col-sm-2 control-label"></label>

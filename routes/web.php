@@ -229,6 +229,7 @@ Route::group(['prefix' => 'auth', 'middleware' => ['auth']], function () {
     Route::resource('users', 'UserController');
     Route::post('user/{user_id}/update', 'UserController@updateProfile')->name('user.profile');
     Route::get('user/{user_id}/info', 'UserController@userInfo')->name('user.info');
+    Route::get('user/{user_id}/info/{product_id}/product','ProductController@showProduct')->name('user.product');
 
     Route::resource('blogs', 'BlogController');
 
