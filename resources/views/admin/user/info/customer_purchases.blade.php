@@ -2,8 +2,8 @@
     <table id="normal-table" class="table table-striped table-bordered nowrap datatable_action" role="grid" aria-describedby="basic-col-reorder_info">
        <thead>
            <tr>
-               {{-- <th>Vendor</th> --}}
                <th>Vendor</th>
+               <th>Product</th>
                <th>Sales Quantity</th>
                <th>Price</th>
                <th>Sold At</th>

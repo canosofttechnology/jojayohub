@@ -51,9 +51,13 @@ class UserController extends Controller
             return view('errors.403');
         $active_tab = "manage";
         $allCategories = $this->category->get();
-        $allUsers = $this->customer();
+
+        $allUsers = $this->user->where('roles', 'vendor')->get();
+        $customer_lists = $this->user->where('roles', 'customers')->get();
+        $employees = $this->user->where('roles', 'admin')->orWhere('roles', 'employee')->get();
         // $allUsers = $this->user->where('roles', '!=', 'customers')->get();
-        return view('admin.pages.users', compact('allUsers', 'active_tab', 'allCategories'));
+        // dd($employees);
+        return view('admin.pages.users', compact('allUsers', 'active_tab', 'allCategories', 'customer_lists', 'employees'));
     }
 
     /**
@@ -502,7 +506,7 @@ class UserController extends Controller
             $employee_data = $this->employee->where('user_id', $user_id)->first();
         }
         if ($role == 'customers') {
-            $customer_purchase=Sales::with('vendor')->where('retailer_id',$user_id)->get();
+            $customer_purchase = Sales::with('vendor')->where('retailer_id', $user_id)->get();
         }
         return view('admin.user.info.user_info', compact('data', 'employee_data', 'vendor_data', 'permitted', 'allCategories', 'vendor_sales', 'customer_purchase'));
     }
