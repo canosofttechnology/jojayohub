@@ -36,4 +36,13 @@ class Sales extends Model
         return $this->belongsTo('App\Models\Size', 'size_id');
     }
 
+    public function vendor()
+    {
+        return $this->belongsTo(Vendor::class);
+    }
+
+    public function retailer(){
+        return $this->belongsTo(User::class,'retailer_id','id');
+    }
+
 }

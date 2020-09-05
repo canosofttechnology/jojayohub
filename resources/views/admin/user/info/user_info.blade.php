@@ -7,7 +7,9 @@
             <div class="nav-tabs-custom">
                <ul class="nav nav-tabs">
                   <li class="active"><a href="#manage" data-toggle="tab">User Info</a></li>
-                  {{-- <li class=""><a href="#create" data-toggle="tab">New User</a></li> --}}
+                  @if ($data->roles=='vendor'||$data->roles=='customers')
+                    <li class=""><a href="#create" data-toggle="tab">{{ isset($vendor_sales)?'Vendor Sales':'Cutomer Purchase'}}</a></li>
+                @endif
                   {{-- <input type="hidden" id="base" value="{{ route('ajax.users') }}"> --}}
                </ul>
                <div class="tab-content bg-white">
@@ -86,9 +88,15 @@
                         </div>
 
                   </div>
-                  {{-- <div class="tab-pane" id="create">
 
-                  </div> --}}
+                  <div class="tab-pane" id="create">
+                      @if ($data->roles=='vendor')
+                          @include('admin.user.info.vendor_sales')
+                      @endif
+                      @if ($data->roles=='customers')
+                          @include('admin.user.info.customer_purchases')
+                      @endif
+                  </div>
                </div>
             </div>
          </div>
