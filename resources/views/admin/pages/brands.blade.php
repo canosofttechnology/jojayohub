@@ -7,6 +7,8 @@
             <div class="panel panel-custom ">
                 <header class="panel-heading">Add Brand</header>
                 <div class="panel-body">
+                <form id="data" method="post" enctype="multipart/form-data">
+                @csrf
                     <div class="form-group">
                         <label>Name</label>
                         <input class="form-control" type="text" name="name" required="" id="name">
@@ -17,40 +19,23 @@
                         <input class="form-control" type="text" name="slug" required="" id="slug">
                         <span class="hint">The “slug” is the URL-friendly version of the name. It is usually all lowercase and contains only letters, numbers, and hyphens.</span>
                     </div>
-                    <div class="form-group">
-                        <div class="fileinput fileinput-new" data-provides="fileinput">
-                            <div class="fileinput-new thumbnail" style="width: 210px;">
-                            @php
-                            $logo = "http://placehold.it/170x29";
-                            if(!empty($data->logo)){
-                                $logo = $data->logo;
-                            }
-                            @endphp
-                                <input type="hidden" id="thumbnail">
-                                <img src="{{ $logo }}" id="thumbnailholder" alt="Please Connect Your Internet">
-                            </div>
-                            <div class="fileinput-preview fileinput-exists thumbnail" style="width: 210px;"></div>
-                            <div>
-                            <span class="btn btn-default btn-file">
-                                <span class="fileinput-new">
-                                    <a href="{{ url('/vendor/filemanager/dialog.php?type=4&field_id=thumbnail&descending=1&sort_by=date&lang=undefined&akey=061e0de5b8d667cbb7548b551420eb821075e7a6') }}" class="btn iframe-btn btn-primary" type="button">
-                                        <i class="fa fa-picture-o"></i> Choose
-                                    </a>                                    
-                                    <input type="hidden" name="logo" id="thumbnailthumbnail" value="{{ @$data->logo }}">
-                                    <span class="fileinput-exists">Change</span>
-                                </span>
-                                <a href="#" class="btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
-                            </span>
-                            </div>
-                            <div id="valid_msg" style="color: #e11221"></div>
+                    <div class="form-group small-image">
+                        <div class="file-upload no-dash">
+                            <input type="file" id="files" name="logo" style="opacity:1">
                         </div>
+                        @if(!empty($data->logo))
+                        <span class="pip">
+                            <img class="imageThumb" src="{{ asset('/uploads/brands/Thumb-'.$data->logo) }}">                      
+                        </span>
+                        @endif
                         @if ($errors->has('logo'))
-                        <div class="col-lg-3">
+                        <div class="col-lg-12">
                             <span class="validation-errors text-danger">{{ $errors->first('logo') }}</span>
                         </div>
                         @endif
                     </div>
                     <input type="submit" name="submit" value="Add New Brand" class="btn btn-primary" id="submit">
+                </form>
                 </div>
             </div>
         </div>
