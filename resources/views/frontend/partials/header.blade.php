@@ -174,7 +174,7 @@
                                                       <li class="menu__item">
                                                          <!-- This is a synthetic element that allows to adjust the vertical offset of the submenu using CSS. -->
                                                          <div class="menu__item-submenu-offset"></div>
-                                                         <a class="menu__item-link" href="#">
+                                                      <a class="menu__item-link" href="{{route('categories',$secondary->slug)}}">
                                                             {{ $secondary->name }}
                                                             <svg class="menu__item-arrow" width="6px" height="9px">
                                                                <use xlink:href="/frontend/images/sprite.svg#arrow-rounded-right-6x9"></use>
@@ -192,7 +192,7 @@
                                                                   ?>
                                                                   <li class="menu__item">
                                                                      <div class="menu__item-submenu-offset"></div>
-                                                                     <a class="menu__item-link" href="{{ route('categories', $final_cat->slug) }}">{{ $final_cat->name }}</a>
+                                                                     <a class="menu__item-link" href="{{ route('categories.sec', [$secondary->slug,$final_cat->slug]) }}">{{ $final_cat->name }}</a>
                                                                   </li>
                                                                   @endforeach
                                                                </ul>
