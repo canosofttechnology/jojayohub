@@ -58,6 +58,7 @@ class NewOrderController extends Controller
                 'alert-type' => 'success',
                 'message' => 'Order submitted successfully.'
             );
+            Cart::destroy();
         } else {
             $notification = array(
                 'alert-type' => 'error',

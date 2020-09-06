@@ -14,7 +14,7 @@
            @if($vendor_sales)
                @foreach($vendor_sales as $saleList)
                    <tr>
-                       <td>{{$saleList->retailer->name}}</td>
+                       <td>{{$saleList->reTailer->name}}</td>
                        <td>{{ $saleList->productName->name }}</td>
                        <td>{{ $saleList->quantity }}</td>
                        <td>{{ $saleList->price }}</td>

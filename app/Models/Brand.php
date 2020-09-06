@@ -12,11 +12,12 @@ class Brand extends Model
         $rules = [
             'name' => 'bail|required|string|unique:brands,name',
             'slug' => 'bail|required|string|unique:brands,slug',
-            'logo' => 'required|string'
+            'logo' => 'required'
         ];
         if($rules != 'add'){
             $rules['name'] = "required|string";
             $rules['slug'] = "required|string";
+            $rules['logo'] = "nullable";
         }
         return $rules;
     }

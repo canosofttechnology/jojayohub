@@ -18,11 +18,41 @@
       <link rel="stylesheet" href="/frontend/css/style.css">
       <!-- font - fontawesome -->
       <link rel="stylesheet" href="/frontend/css/all.min.css">
+      <link rel="stylesheet" href="/admin/css/toastr.min.css">
       <!-- font - stroyka -->
       <link rel="stylesheet" href="/frontend/css/stroyka.css">
+      
 
    </head>
    <body>
+      <!-- Load Facebook SDK for JavaScript -->
+      <div id="fb-root"></div>
+      <script>
+        window.fbAsyncInit = function() {
+          FB.init({
+            xfbml            : true,
+            version          : 'v8.0'
+          });
+        };
+
+        (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = 'https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js';
+        fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'facebook-jssdk'));</script>
+
+      <!-- Your Chat Plugin code -->
+      <div class="fb-customerchat"
+        attribution=setup_tool
+        page_id="111686237325677"
+  theme_color="#682F90"
+  logged_in_greeting="Hi! Welcome to Jojayohub. It 's nice to see you!"
+  logged_out_greeting="Hi! Welcome to Jojayohub. It 's nice to see you!">
+      </div>
+    <!-- Load Facebook SDK for JavaScript -->
+      
       <!-- site -->
       <div class="site">
          <!-- mobile site__header -->
@@ -71,16 +101,7 @@
                                  </span>
                               </button>
                            </div>
-                           <div class="indicator indicator--mobile d-sm-flex d-none">
-                              <a href="wishlist.html" class="indicator__button">
-                                 <span class="indicator__area">
-                                    <svg width="20px" height="20px">
-                                       <use xlink:href="/frontend/images/sprite.svg#heart-20"></use>
-                                    </svg>
-                                    <span class="indicator__value">0</span>
-                                 </span>
-                              </a>
-                           </div>
+                           
                            <div class="indicator indicator--mobile">
                               <a href="cart.html" class="indicator__button">
                                  <span class="indicator__area">
@@ -174,7 +195,7 @@
                                                       <li class="menu__item">
                                                          <!-- This is a synthetic element that allows to adjust the vertical offset of the submenu using CSS. -->
                                                          <div class="menu__item-submenu-offset"></div>
-                                                      <a class="menu__item-link" href="{{route('categories',$secondary->slug)}}">
+                                                         <a class="menu__item-link" href="#">
                                                             {{ $secondary->name }}
                                                             <svg class="menu__item-arrow" width="6px" height="9px">
                                                                <use xlink:href="/frontend/images/sprite.svg#arrow-rounded-right-6x9"></use>
@@ -192,7 +213,7 @@
                                                                   ?>
                                                                   <li class="menu__item">
                                                                      <div class="menu__item-submenu-offset"></div>
-                                                                     <a class="menu__item-link" href="{{ route('categories.sec', [$secondary->slug,$final_cat->slug]) }}">{{ $final_cat->name }}</a>
+                                                                     <a class="menu__item-link" href="{{ route('categories', $final_cat->slug) }}">{{ $final_cat->name }}</a>
                                                                   </li>
                                                                   @endforeach
                                                                </ul>
@@ -204,7 +225,7 @@
                                                       <li class="menu__item">
                                                          <!-- This is a synthetic element that allows to adjust the vertical offset of the submenu using CSS. -->
                                                          <div class="menu__item-submenu-offset"></div>
-                                                         <a class="menu__item-link" href="{{route('categories',$secondary->slug)}}">{{ $secondary->name }}</a>
+                                                         <a class="menu__item-link" href="#">{{ $secondary->name }}</a>
                                                       </li>
                                                       @endif
                                                    @endforeach
@@ -256,17 +277,7 @@
                               </ul>
                            </div>
                            <!-- .nav-links / end -->
-                           <div class="nav-panel__indicators">
-                              <div class="indicator">
-                                 <a href="wishlist.html" class="indicator__button">
-                                    <span class="indicator__area">
-                                       <svg width="20px" height="20px">
-                                          <use xlink:href="/frontend/images/sprite.svg#heart-20"></use>
-                                       </svg>
-                                       <span class="indicator__value">0</span>
-                                    </span>
-                                 </a>
-                              </div>
+                           <div class="nav-panel__indicators">                              
                               <div class="indicator indicator--trigger--click">
                                  <a href="{{ url('/cart') }}" class="indicator__button">
                                     <span class="indicator__area">
@@ -276,8 +287,7 @@
                                        <span class="indicator__value indicator__cart">{{ Cart::content()->count() }}</span>
                                     </span>
                                  </a>
-                                 <div class="indicator__dropdown">
-
+                                 <div class="indicator__dropdown">  
                                     <div class="dropcart dropcart--style--dropdown">
                                        <div class="dropcart__body">
                                           <div class="dropcart__products-list">

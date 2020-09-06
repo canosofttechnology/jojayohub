@@ -499,7 +499,7 @@ class UserController extends Controller
             if (isset($vendor_data)) {
                 $allCategories = $this->category->get();
                 $permitted = $this->category_permitted->where('vendor_id', $vendor_data->id)->get();
-                $vendor_sales = Sales::with('retailer')->where('vendor_id', $vendor_data->id)->get();
+                $vendor_sales = Sales::with('reTailer')->where('vendor_id', $vendor_data->id)->get();
                 // dd($vendor_sales);
             }
         } elseif ($role ==  'employee') {

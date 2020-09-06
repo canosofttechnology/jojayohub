@@ -46,7 +46,7 @@ class CartController extends Controller
     {
         $product_data = $this->products->with('images')->with('sizes')->with('set')->where('id', $request->id)->first();
         $image = asset('uploads/products/Thumb-'.$product_data->images[0]->image);
-        $price = $product_data->set->price;
+        $price = 0;
         $cart_data = Cart::add($product_data->id, $product_data->name, 1, $price, ['image' => $image, 'slug' => $product_data->slug])->associate('App\Models\Product');
         return response()->json(['rowId' => $cart_data->rowId, 'message'=>'Product added to cart!']);
     }

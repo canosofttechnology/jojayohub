@@ -44,28 +44,30 @@ class BrandController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
+    { 
         $rules = $this->brands->getRules();
         $request->validate($rules);
         $data = $request->all();
         $data['name'] = $request->name;
         $data['slug'] = $request->slug;
-        $data['logo'] = $request->logo;
+        if($request->hasFile('logo')){ 
+            $logo = uploadImage($request->logo, 'brands', '100x100');
+        }
+        $data['logo'] = $logo;
         $this->brands->fill($data);
         $status = $this->brands->save();
         if($status){
             $notification = array(
                 'message' => 'Brand added successfully.',
-                'alert_type' => 'success'
+                'alert-type' => 'success'
             );
-            return response()->json($notification);
         } else {
             $notification = array(
                 'message' => 'Brand could not be created.',
-                'alert_type' => 'error'
-            );
-            return response()->json($notification);
+                'alert-type' => 'error'
+            );            
         }
+        return redirect()->route('brands.index')->with($notification);
     }
 
     /**
@@ -117,6 +119,7 @@ class BrandController extends Controller
     public function update(Request $request, $id)
     {
         $this->brands = $this->brands->find($id);
+        $old_logo = $this->brands->logo;
         if(!$this->brands) {
             $notification - array(
                 'message' => 'Brand not found.',
@@ -128,6 +131,15 @@ class BrandController extends Controller
         $rules = $this->brands->getRules('update');
         $request->validate($rules);
         $data = $request->all();
+        if($request->hasFile('logo')){ 
+            $logo = uploadImage($request->logo, 'brands', '100x100');
+            if(file_exists(public_path().'/uploads/brands/'.$old_logo))
+            {
+                unlink(public_path().'/uploads/brands/'.$old_logo);
+                unlink(public_path().'/uploads/brands/Thumb-'.$old_logo);
+            } 
+        }
+        $data['logo'] = $logo;
         $this->brands->fill($data);
         $success = $this->brands->save();
         if($success){

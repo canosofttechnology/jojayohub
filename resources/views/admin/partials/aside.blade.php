@@ -68,7 +68,7 @@
 
             <ul class='nav s-menu '>
                 <li class='active' >
-                  <a  title='Dashboard' href="{{ url('/admin/dashboard') }}">
+                  <a  title='Dashboard' href="{{ url('/auth/dashboard') }}">
                  <em class='fa fa-dashboard'></em><span>Dashboard</span></a>
                 </li>
                 <li class='sub-menu '>
@@ -197,35 +197,6 @@
                   </li>
                   </ul>
                 </li>
-                <li class='sub-menu '>
-                  <a data-toggle='collapse' href='#payment'> <em class='fa fa-bank'></em><span>Payment</span></a>
-                  <ul id=payment class='nav s-menu sidebar-subnav collapse'><li class="sidebar-subnav-header">Payment
-                  </li>
-                  <li class='' >
-                    <a  title='Supplier' href="{{ route('payments.index') }}">
-                   <em class='icon-briefcase'></em><span>Payment Methods</span></a>
-                  </li>
-                  <li class='' >
-                    <a  title='Supplier' href="{{ route('accounts.index') }}">
-                   <em class='icon-briefcase'></em><span>All Accounts</span></a>
-                  </li>
-                  </ul>
-                </li>
-                <li class='sub-menu '>
-                  <a data-toggle='collapse' href='#locations'> <em class='fa fa-map'></em><span>Delivery locations</span></a>
-                  <ul id=locations class='nav s-menu sidebar-subnav collapse'><li class="sidebar-subnav-header">Delivery locations
-                  </li>
-                  <li class='' >
-                    <a  title='Items' href="{{ route('cities.index') }}">
-                   <em class='fa fa-cube'></em><span>Cities</span></a>
-                  </li>
-                  <li class='' >
-                    <a  title='Supplier' href="{{ route('areas.index') }}">
-                   <em class='icon-briefcase'></em><span>Areas</span></a>
-                  </li>
-                  </ul>
-                </li>             
-                
                 <li class='' >
                   <a  title='Settings' href="{{ url('/auth/media') }}">
                  <em class='fa fa-upload'></em><span>File Manager</span></a>

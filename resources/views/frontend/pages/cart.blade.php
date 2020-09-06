@@ -66,7 +66,7 @@
                   <div class="cart__buttons">
                      <a href="{{ url('/shop') }}" class="btn btn-light">Continue Shopping</a> 
                      <a href="{{ url('/review') }}" class="btn btn-secondary ml-2">Proceed to Checkout</a> 
-                     <a href="javascript:;" class="btn btn-primary cart__update-button">Destroy Cart</a>
+                     <a href="{{ route('destroyCart') }}" class="btn btn-primary cart__update-button">Destroy Cart</a>
                   </div>
                </div>
             </div>

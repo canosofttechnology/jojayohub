@@ -108,7 +108,6 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
         $rules = $this->product->getRules();
         $request->validate($rules);
         $data = $request->all();
@@ -174,8 +173,38 @@ class ProductController extends Controller
                $success = $this->product->delete();
                return redirect()->back()->with($notification);
             }
+            // product color
+            if(!empty($request->color)){
+                $validator = Validator::make($request->only(['color']), [
+                'color' => 'required|array',
+                'color' => 'required|exists:colors,id',
+                ]);
+                if ($validator->fails()) {
+                    $delete_products = $this->product->find($product_id);
+                    $success = $this->product->delete();
+                    return redirect()->back()->withErrors($validator)->withInput();
+                }
+                for($c = 0; $c < count($request->color); $c++){
+                    $product_set = new ColorDetail();
+                    $set_data['product_id'] = $product_id;
+                    $set_data['color_id'] = $request->color[$c];
+                    $product_set->fill($set_data);
+                    $data_set = $product_set->save();
+                    $product_color_id = $product_set->id;
+                }
+            } else {
+                $notification = array(
+                    'message' => 'Please add colors for this product.',
+                    'alert-type' => 'error'
+                );
+               $delete_news = $this->product->find($product_id);
+               $success = $this->product->delete();
+               return redirect()->back()->with($notification);
+            }
+            
+            // Product Color
             if(!empty($request->size)){
-                for($i = 0; $i < count($request->size); $i++){
+                for($s = 0; $s < count($request->size); $s++){
                     $validator = Validator::make($request->only(['size', 'min_order', 'max_order', 'price', 'wholesale', 'color']), [
                     'size' => 'required|array',
                     'size.*' => 'required|exists:sizes,id',
@@ -195,36 +224,48 @@ class ProductController extends Controller
                         $success = $this->product->delete();
                         return redirect()->back()->withErrors($validator)->withInput();
                     }
-                    for($i = 0; $i < count($request->color); $i++){
-                        $product_set = new ColorDetail();
-                        $set_data['product_id'] = $product_id;
-                        $set_data['color_id'] = $request->color[$i];
-                        $product_set->fill($set_data);
-                        $data_set = $product_set->save();
-                        $product_color_id = $product_set->id;
-                        for($s = 0; $s < count($request->size); $s++){
-                            $size_detail = new SizeDetail();
-                            $size_data['product_id'] = $product_id;
-                            $size_data['size_id'] = $request->size[$s];
-                            $size_detail->fill($size_data);
-                            $data_size = $size_detail->save();
-                        }
-                    }
-
-
+                    $size_detail = new SizeDetail();
+                    $size_data['product_id'] = $product_id;
+                    $size_data['size_id'] = $request->size[$s];
+                    $size_detail->fill($size_data);
+                    $data_size = $size_detail->save();
                 }
-            for($i = 0; $i < count($request->price); $i++){
-                $product_price = new Set();
-                $price_data['product_id'] = $product_id;
-                $price_data['min_order'] = $request->min_order[$i];
-                $price_data['max_order'] = $request->max_order[$i];
-                $price_data['price'] = $request->price[$i];
-                $price_data['wholesale'] = $request->wholesale[$i];
-                $product_price->fill($price_data);
-                $data_size = $product_price->save();
+            } else {
+                $notification = array(
+                    'message' => 'Please add sizes for this product.',
+                    'alert-type' => 'error'
+                );
+               $delete_news = $this->product->find($product_id);
+               $success = $this->product->delete();
+               return redirect()->back()->with($notification);
             }
+            
+            // Price 
+            if(!empty($request->min_order)){
+                for($i = 0; $i < count($request->min_order); $i++){
+                    $product_price = new Set();
+                    $price_data['product_id'] = $product_id;
+                    $price_data['quantity'] = $request->quantity;
+                    $price_data['min_order'] = $request->min_order[$i];
+                    $price_data['max_order'] = $request->max_order[$i];
+                    $price_data['price'] = $request->price[$i];
+                    $price_data['wholesale'] = $request->wholesale[$i];
+                    $product_price->fill($price_data);
+                    $data_size = $product_price->save();
+                }
+            } else {
+                $notification = array(
+                    'message' => 'Please add product details for this product.',
+                    'alert-type' => 'error'
+                );
+               $delete_news = $this->product->find($product_id);
+               $success = $this->product->delete();
+               return redirect()->back()->with($notification);
+            }
+            
             // product attributes
-            foreach($request->attr as $key => $val){
+            if(!empty($request->attr)){
+                foreach($request->attr as $key => $val){
                 $attr_data = new ProductAttributeDetail();
                 $attr_detail['product_id'] = $product_id;
                 $attr_detail['product_attribute_id'] = $key;
@@ -236,7 +277,10 @@ class ProductController extends Controller
                 }
                 $attr_data->fill($attr_detail);
                 $attr_size = $attr_data->save();
+                }
             }
+            
+            // Similar Products
             if(!empty($request->similar_poducts)){
                 $simi_ids = implode(",", $request->similar_poducts);
                 $simi_data = new SimilarProducts();
@@ -244,15 +288,6 @@ class ProductController extends Controller
                 $simi_detail['ids'] = $simi_ids;
                 $simi_data->fill($simi_detail);
                 $simi_data->save();
-            }
-            } else {
-                $notification = array(
-                    'message' => 'Please select sizes for this product.',
-                    'alert-type' => 'error'
-                );
-               $delete_news = $this->product->find($product_id);
-               $success = $this->product->delete();
-               return redirect()->back()->with($notification);
             }
             $notification = array(
               'message' => 'Product created successfully.',
@@ -310,7 +345,7 @@ class ProductController extends Controller
         $vendor_list = $this->vendors->get();
         $allProducts = $this->product->orderBy('created_at', 'desc')->get();
         $current_vendor = $this->vendors->with('categoryAssigned')->where('user_id', auth()->user()->id)->first();
-        return view('admin.pages.products', compact('category','product_attr','wholesale_types','colors','brands','product_sizes','colors_available','sizes_available','data','image_data', 'avail_data','vendor_list', 'active_tab','color_list', 'allProducts','current_vendor'));
+        return view('admin.pages.products', compact('category','product_attr','wholesale_types','colors','brands','product_sizes','colors_available','sizes_available','size_data','data','image_data', 'avail_data','vendor_list', 'active_tab','color_list', 'allProducts','current_vendor'));
     }
 
     /**
@@ -540,6 +575,11 @@ class ProductController extends Controller
     public function getSet($id){
         $set_detail = $this->set->where('product_id', $id)->first();
         return response()->json($set_detail);
+    }
+    
+    public function getSuk($id){
+        $suk_detail = $this->product->where('id', $id)->pluck('sku')->first();
+        return response()->json($suk_detail);
     }
 
 }

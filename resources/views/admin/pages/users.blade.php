@@ -200,6 +200,7 @@
                                                             <option value="admin" {{  @$data->roles == 'admin' ? 'selected' : ''}}>Admin</option>
                                                             <option value="vendor" {{  @$data->roles == 'vendor' ? 'selected' : ''}}>Vendor</option>
                                                             <option value="employee" {{  @$data->roles == 'employee' ? 'selected' : ''}}>Editor</option>
+                                                            <option value="customers" {{  @$data->roles == 'customers' ? 'selected' : ''}}>Customers</option>
                                                         </select>
                                                     </div>
                                                 </div>

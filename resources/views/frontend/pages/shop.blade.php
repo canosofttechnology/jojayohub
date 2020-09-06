@@ -201,14 +201,14 @@
                                 <div class="product-card__actions">
                                     <div class="product-card__availability">Availability: <span class="text-success">In Stock</span></div>                                    
                                     <div class="product-card__buttons">
-                                        <button class="btn btn-primary product-card__addtocart" type="button">Add To Cart</button> <button class="btn btn-secondary product-card__addtocart product-card__addtocart--list" type="button">Add To Cart</button>
+                                        <button class="btn btn-primary product-card__addtocart add-cart" type="button">Add To Cart</button> <button class="btn btn-secondary product-card__addtocart product-card__addtocart--list add-cart" type="button">Add To Cart</button>
                                         
                                     </div>
                                 </div>
                             </div>
                         </div>
                         @endforeach
-                        @endif                        
+                        @endif 
                     </div>
                 </div>
                 <div class="products-view__pagination">{{$all_products->links()}}</div>

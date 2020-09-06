@@ -198,38 +198,32 @@
                         <i class="fa fa-plus-circle"></i>
                     </a>
                     <ul class="dropdown-menu animated zoomIn">
-                        @if (Auth::user()->roles=='admin')
-                            <li>
-                                <a href="{{ route('users.create') }}">New User</a>
-                            </li>
-                        @endif
-
-                        @if (Auth::user()->roles=='vendor'||Auth::user()->roles=='admin')
                         <li>
                             <a href="{{ route('products.create') }}">New Product</a>
                         </li>
-                        @endif
-                        <li>
+                        @if (Auth::user()->roles == 'admin')
+                            <li>
+                                <a href="{{ route('users.create') }}">New User</a>
+                            </li>
+                            <li>
                             <a href="{{ route('category.index') }}">New Category</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('blogs.create') }}">New Blog</a>
-                        </li>
+                            </li>
+                            <li>
+                                <a href="{{ route('blogs.create') }}">New Blog</a>
+                            </li>
 
-                        <li>
-                            <a href="{{ route('ads.create') }}">New Ad</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('sales.create') }}">New Sale</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('cities.create') }}">New City</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('areas.create') }}">New Area</a>
-                        </li>
+                            <li>
+                                <a href="{{ route('ads.create') }}">New Ad</a>
+                            </li>
+                            <li>
+                                <a href="{{ route('sales.create') }}">New Sale</a>
+                            </li>
+                            
+                        @endif                       
+                        
                     </ul>
                 </li>
+        
                 <!-- START Alert menu-->
                 <li class="dropdown dropdown-list notifications">
                     <a href="#" data-toggle="dropdown">

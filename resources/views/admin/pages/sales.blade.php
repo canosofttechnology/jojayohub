@@ -16,24 +16,26 @@
                      <table id="normal-table" class="table table-striped table-bordered nowrap datatable_action" role="grid" aria-describedby="basic-col-reorder_info">
                         <thead>
                             <tr>
+                                <th>Invoice No</th>
                                 <th>Vendor</th>
+                                <th>Sold To</th>
                                 <th>Product</th>
-                                <th>Sales Quantity</th>
+                                <th>Quantity</th>
                                 <th>Price</th>
                                 <th>Sold At</th>
-                                <th>Entry date</th>
                             </tr>
                         </thead>
                         <tbody>
                             @if($sales_list)
                                 @foreach($sales_list as $saleList)
                                     <tr>
-                                        <td>Vednor</td>
-                                        <td>{{ $saleList->productName->name }}</td>
+                                        <td>{{ $saleList->invoice }}</td>
+                                        <td>{{ $saleList->vendor->company }}</td>
+                                        <td>{{ @$saleList->reTailer->name }}</td>
+                                        <td>{{ @$saleList->productName->name }}</td>
                                         <td>{{ $saleList->quantity }}</td>
-                                        <td>{{ $saleList->price }}</td>
+                                        <td>{{ number_format($saleList->sold_price) }}</td>
                                         <td>{{ $saleList->date }}</td>
-                                        <td>{{ $saleList->created_at }}</td>
                                     </tr>
                                 @endforeach
                             @endif
@@ -76,10 +78,18 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="form-group row">
+                                    <div class="col-md-4 col-lg-2">
+                                        <label for="name" class="block">Product SKU *</label>
+                                    </div>
+                                    <div class="col-md-8 col-lg-10">
+                                        <input type="text" class="form-control" name="sku" id="sku_value" readonly value="" placeholder="SUK of the product">
+                                    </div>
+                                </div>
                                 <div id="product-unavailable">
                                     <div class="form-group row">
                                         <div class="col-md-4 col-lg-2">
-                                            <label for="slug" class="block">Price per piece</label>
+                                            <label for="slug" class="block">Price per qty (Vendor)</label>
                                         </div>
                                         <div class="col-md-8 col-lg-10">
                                             <input type="text" class="form-control" id="selling_price" readonly value="">
@@ -98,7 +108,7 @@
                                             <label for="slug" class="block">Price</label>
                                         </div>
                                         <div class="col-md-8 col-lg-10">
-                                            <input type="text" class="form-control" id="price" readonly value="">
+                                            <input type="text" class="form-control" id="price" readonly value="" placeholder="Price set by vendor">
                                             <div id="my_price"></div>
                                         </div>
                                     </div>                                    
@@ -107,9 +117,13 @@
                                             <label for="slug" class="block">Type</label>
                                         </div>
                                         <div class="col-md-8 col-lg-10">
-                                            <select name="type" id="type" class="form-control">
-                                                <option value="sales">Sales</option>
-                                                <option value="purchase">Purchase</option>
+                                            <select name="retailer_id" id="retailer_id" class="form-control">
+                                                <option>--Select Retailer--</option>
+                                                @if(!empty($retailer_list))
+                                                    @foreach($retailer_list as $retailers)
+                                                    <option value="{{ $retailers->id }}">{{ $retailers->name }}</option>
+                                                    @endforeach
+                                                @endif
                                             </select>
                                         </div>
                                     </div>
@@ -119,6 +133,30 @@
                                         </div>
                                         <div class="col-md-8 col-lg-10">
                                             <input type="datetime-local" class="form-control" name="date">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-4 col-lg-2">
+                                            <label for="slug" class="block">Price per quantity (Jojayo)</label>
+                                        </div>
+                                        <div class="col-md-8 col-lg-10">
+                                            <input type="number" class="form-control" name="price_per_qty" placeholder="Price per piece charged by Jojayohub to retailer">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-4 col-lg-2">
+                                            <label for="slug" class="block">Sold at</label>
+                                        </div>
+                                        <div class="col-md-8 col-lg-10">
+                                            <input type="number" class="form-control" name="sold_price" placeholder="Total price charged by Jojayohub">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-4 col-lg-2">
+                                            <label for="slug" class="block">Remarks</label>
+                                        </div>
+                                        <div class="col-md-8 col-lg-10">
+                                            <textarea class="form-control" name="remarks" placeholder="Add a note for remembrance"></textarea>
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -180,7 +218,14 @@
         data: {_token: "{{ csrf_token() }}", _method:"GET"},
         success: function(response){
             $('#selling_price').val(response.price);
-            
+            $.ajax({
+                method: "GET",
+                url: "/get_suk/"+product_id,
+                
+                success: function(response){
+                    $('#sku_value').val(response);
+                }
+            });
         }
         });
     });

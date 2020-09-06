@@ -50,10 +50,7 @@ Route::get('/blog/{slug}', 'FrontController@BlogDetail')->name('blog-detail');
 Route::get('/blogs', 'FrontController@Blog');
 Route::get('/shop', 'FrontController@shop')->name('shopPage');
 
-Route::get('categoris/{primary_cat}','FrontController@categories')->name('categories');
-Route::get('categoris/{primary_cat}/{secondary_cat}','FrontController@categories')->name('categories.sec');
-// Route::get('/categories/{name}', 'FrontController@categories')->name('categories');
-
+Route::get('/categories/{name}', 'FrontController@categories')->name('categories');
 Route::get('/shopping-cart', function () {
     return view('frontend.pages.shopping-cart');
 });
@@ -97,6 +94,8 @@ Route::post('/get_wholesale', 'WholesaleController@getWholesale')->name('getWhol
 Route::post('/get_wholesale_detail', 'WholesaleController@getDetail')->name('getWholeSaleDetail');
 
 Route::post('/get_similar', 'ProductController@getSimilar')->name('getSimilar');
+
+Route::get('/get_suk/{id}', 'ProductController@getSuk')->name('getSuk');
 
 Route::post('/check-warranty', 'FrontController@warranty')->name('warranty_check');
 
@@ -278,8 +277,9 @@ Route::group(['prefix' => 'auth', 'middleware' => ['auth']], function () {
     // vendor produt
     Route::post('/get_vendor_post','ProductController@getVendorProduct')->name('VendorProduct');
 
-});
+    // Route::get('last-payment', 'PaymentController@lastPaymentData')->name('lastPaymentData');
 
+});
 Route::group(['middleware' => ['auth', 'customers']], function () {
     Route::get('/dashboard', function () {
         return view('frontend.pages.dashboard');
