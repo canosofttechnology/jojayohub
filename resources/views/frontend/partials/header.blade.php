@@ -20,7 +20,7 @@
       <link rel="stylesheet" href="/frontend/css/all.min.css">
       <!-- font - stroyka -->
       <link rel="stylesheet" href="/frontend/css/stroyka.css">
-
+      <link rel="stylesheet" href="/admin/css/toastr.min.css">
    </head>
    <body>
       <!-- site -->
