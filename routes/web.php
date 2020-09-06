@@ -50,8 +50,8 @@ Route::get('/blog/{slug}', 'FrontController@BlogDetail')->name('blog-detail');
 Route::get('/blogs', 'FrontController@Blog');
 Route::get('/shop', 'FrontController@shop')->name('shopPage');
 
-Route::get('{primary_cat}','FrontController@categories')->name('categories');
-Route::get('{primary_cat}/{secondary_cat}','FrontController@categories')->name('categories.sec');
+Route::get('categoris/{primary_cat}','FrontController@categories')->name('categories');
+Route::get('categoris/{primary_cat}/{secondary_cat}','FrontController@categories')->name('categories.sec');
 // Route::get('/categories/{name}', 'FrontController@categories')->name('categories');
 
 Route::get('/shopping-cart', function () {

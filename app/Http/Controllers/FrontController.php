@@ -161,21 +161,44 @@ class FrontController extends Controller
         return view('frontend.pages.shop', compact('all_products'));
     }
 
-    public function categories($prime_slug, $slug = null)
+    public function categories($prime_slug, $slug = null, Request $request)
     {
-        if (!isset($slug)) {
-            $category_slug = $this->secondary_categories->where('slug', $prime_slug)->first();
-            $ids = $category_slug->FinalCategory()->pluck('id');
-            $category_product = $this->products->with('images')->whereIn('category_id', $ids)->paginate(12);
-        }
+        $selected_brands = $request->brands;
+        $ex = explode(',', $selected_brands);
+        $selected_brands = $this->brand->whereIn('slug', $ex)->get()->pluck('id')->toArray();
+        $category_slug = isset($slug) ? $category_slug = $this->product_categories->where('slug', $slug)->first() : $this->secondary_categories->where('slug', $prime_slug)->first();
 
-        if (isset($slug)) {
-            $category_slug = $this->product_categories->where('slug', $slug)->first();
-            $category_product = $this->products->with('images')->where('category_id', $category_slug->id)->paginate(12);
-        }
+        $category_product = $this->products->with('images')
+            ->when(!isset($slug), function ($query) use ($category_slug) {
+                $ids = $category_slug->FinalCategory()->pluck('id');
+                return $query->whereIn('category_id', $ids);
+            })
+            ->when(count($selected_brands) > 0, function ($query) use ($selected_brands) {
+                return $query->whereIn('brand_id', $selected_brands);
+            })
+            ->when(isset($slug), function ($query) use ($category_slug) {
+                return $query->where('category_id', $category_slug->id);
+            })
+            ->paginate(12);
+        // $brand_ids = $category_product->pluck('brand_id')->unique()->filter();
+        // $brands = $this->brand->whereIn('id', $brand_ids)->get();
+        $brands = $this->brand->get();
+        // dd($category_product);
+        // if (!isset($slug)) {
+        //     $category_slug = $this->secondary_categories->where('slug', $prime_slug)->first();
+        //     $ids = $category_slug->FinalCategory()->pluck('id');
+        //     $category_product = $this->products->with('images')->whereIn('category_id', $ids)->paginate(12);
+        //     $brand_ids = $category_product->pluck('brand_id')->unique()->filter();
+        //     $brands = $this->brand->whereIn('id', $brand_ids)->get();
+        // }
+
+        // if (isset($slug)) {
+        //     $category_slug = $this->product_categories->where('slug', $slug)->first();
+        //     $category_product = $this->products->with('images')->where('category_id', $category_slug->id)->paginate(12);
+        // }
 
 
-        return view('frontend.pages.categories', compact('category_product', 'category_slug'));
+        return view('frontend.pages.categories', compact('category_product', 'category_slug', 'brands', 'selected_brands'));
     }
 
     public function page($slug)

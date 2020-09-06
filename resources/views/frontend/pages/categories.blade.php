@@ -232,6 +232,9 @@
                    @if (count((array)$category_slug->FinalCategory)>0)
                        @include('frontend.pages.filters.categories')
                    @endif
+                   @if (isset($brands))
+                    @include('frontend.pages.filters.brands')
+                   @endif
                     {{-- <div class="widget-filters__item">
                         <div class="filter filter--opened" data-collapse-item>
                         <button type="button" class="filter__title" data-collapse-trigger>

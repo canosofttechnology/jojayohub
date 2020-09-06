@@ -108,6 +108,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         $rules = $this->product->getRules();
         $request->validate($rules);
         $data = $request->all();
@@ -309,7 +310,7 @@ class ProductController extends Controller
         $vendor_list = $this->vendors->get();
         $allProducts = $this->product->orderBy('created_at', 'desc')->get();
         $current_vendor = $this->vendors->with('categoryAssigned')->where('user_id', auth()->user()->id)->first();
-        return view('admin.pages.products', compact('category','product_attr','wholesale_types','colors','brands','product_sizes','colors_available','sizes_available','size_data','data','image_data', 'avail_data','vendor_list', 'active_tab','color_list', 'allProducts','current_vendor'));
+        return view('admin.pages.products', compact('category','product_attr','wholesale_types','colors','brands','product_sizes','colors_available','sizes_available','data','image_data', 'avail_data','vendor_list', 'active_tab','color_list', 'allProducts','current_vendor'));
     }
 
     /**
