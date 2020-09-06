@@ -204,7 +204,7 @@
                                                       <li class="menu__item">
                                                          <!-- This is a synthetic element that allows to adjust the vertical offset of the submenu using CSS. -->
                                                          <div class="menu__item-submenu-offset"></div>
-                                                         <a class="menu__item-link" href="#">{{ $secondary->name }}</a>
+                                                         <a class="menu__item-link" href="{{route('categories',$secondary->slug)}}">{{ $secondary->name }}</a>
                                                       </li>
                                                       @endif
                                                    @endforeach
