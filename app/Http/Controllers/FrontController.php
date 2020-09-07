@@ -50,7 +50,7 @@ class FrontController extends Controller
       $all_blogs = $this->blog->take(10)->get();
       $hero_slider = $this->slider->take(3)->get();
       $latest_products = $this->products->with('images')->orderBy('created_at', 'desc')->take(12)->get();
-      
+
       $men_name = "Women's Fashion";
 
       $pc = PrimaryCategory::with('secondaryCategories.productCategories.products')->where('name', $men_name)->first();
@@ -58,12 +58,12 @@ class FrontController extends Controller
       $men_fashion = $pc->secondaryCategories->pluck('productCategories')->collapse()->pluck('products')->collapse();
 
       $name = "Women's Fashion";
-      
-      $women_fashion = Product::whereHas('productCategory', function($query) 
+
+      $women_fashion = Product::whereHas('productCategory', function($query)
       use($name) {
-          $query->whereHas('secondaryCategory', function($query) 
-          use($name)  { 
-              $query->whereHas('primaryCategory', function($query) 
+          $query->whereHas('secondaryCategory', function($query)
+          use($name)  {
+              $query->whereHas('primaryCategory', function($query)
               use($name){
                   $query->where('name', $name);
               });
@@ -72,21 +72,21 @@ class FrontController extends Controller
     ->with([
       'productCategory' => function($query) use($name) {
           $query->whereHas('secondaryCategory', function($query) use($name)
-            { 
-              $query->whereHas('primaryCategory', function($query) 
+            {
+              $query->whereHas('primaryCategory', function($query)
                 use($name){
                     $query->where('name', $name);
                 });
             });
       },
       'productCategory.secondaryCategory'=> function($query) use($name)
-      { 
-              $query->whereHas('primaryCategory', function($query) 
+      {
+              $query->whereHas('primaryCategory', function($query)
                 use($name){
                     $query->where('name', $name);
                 });
       },
-      'productCategory.secondaryCategory.primaryCategory' =>                   
+      'productCategory.secondaryCategory.primaryCategory' =>
         function($query) use($name) {
               $query->where('name', $name);
       }])->get();
@@ -147,16 +147,71 @@ class FrontController extends Controller
       return view('frontend.pages.shipping', compact('my_location'));
     }
 
-    public function shop(){
-      $all_products = $this->products->with('images')->paginate(15);
-      return view('frontend.pages.shop', compact('all_products'));
+    public function shop(Request $request){
+        $requested_brands = $request->brands;
+        $ex = explode(',', $requested_brands);
+        $selected_brands = $this->brand->whereIn('slug', $ex)->get()->pluck('id')->toArray();
+        $all_products = $this->products->with('images')
+        ->when(count($selected_brands) > 0, function ($query) use ($selected_brands) {
+            foreach($selected_brands as $brand){
+                $query->orWhere('brand_id',$brand);
+            }
+            return $query;
+        })
+        ->paginate(15);
+        $brands = $this->brand->get();
+        return view('frontend.pages.shop', compact('all_products','brands','selected_brands'));
     }
 
-    public function categories($slug){
-      $category_slug = $this->product_categories->where('slug', $slug)->first(); //dd($category_slug);
-      $category_product = $this->products->with('images')->where('category_id', $category_slug->id)->paginate(12);//dd($category_product);
-      return view('frontend.pages.categories', compact('category_product','category_slug'));
+    public function categories($prime_slug, $slug = null, Request $request)
+    {
+        $requested_brands = $request->brands;
+        $ex = explode(',', $requested_brands);
+        $selected_brands = $this->brand->whereIn('slug', $ex)->get()->pluck('id')->toArray();
+        // dd($selected_brands);
+        $category_slug = isset($slug) ? $category_slug = $this->product_categories->where('slug', $slug)->first() : $this->secondary_categories->where('slug', $prime_slug)->first();
+
+        $category_product = $this->products->with('images')
+            ->when(!isset($slug), function ($query) use ($category_slug) {
+                $ids = $category_slug->FinalCategory()->pluck('id');
+                return $query->whereIn('category_id', $ids);
+            })
+            ->when(count($selected_brands) > 0, function ($query) use ($selected_brands) {
+                foreach($selected_brands as $brand){
+                    $query->orWhere('brand_id',$brand);
+                }
+                return $query;
+            })
+            ->when(isset($slug), function ($query) use ($category_slug) {
+                return $query->where('category_id', $category_slug->id);
+            })
+            ->paginate(15);
+        // $brand_ids = $category_product->pluck('brand_id')->unique()->filter();
+        // $brands = $this->brand->whereIn('id', $brand_ids)->get();
+        $brands = $this->brand->get();
+        // dd($category_product);
+        // if (!isset($slug)) {
+        //     $category_slug = $this->secondary_categories->where('slug', $prime_slug)->first();
+        //     $ids = $category_slug->FinalCategory()->pluck('id');
+        //     $category_product = $this->products->with('images')->whereIn('category_id', $ids)->paginate(12);
+        //     $brand_ids = $category_product->pluck('brand_id')->unique()->filter();
+        //     $brands = $this->brand->whereIn('id', $brand_ids)->get();
+        // }
+
+        // if (isset($slug)) {
+        //     $category_slug = $this->product_categories->where('slug', $slug)->first();
+        //     $category_product = $this->products->with('images')->where('category_id', $category_slug->id)->paginate(12);
+        // }
+
+
+        return view('frontend.pages.categories', compact('category_product', 'category_slug', 'brands', 'selected_brands'));
     }
+
+    // public function categories($slug){
+    //   $category_slug = $this->product_categories->where('slug', $slug)->first(); //dd($category_slug);
+    //   $category_product = $this->products->with('images')->where('category_id', $category_slug->id)->paginate(12);//dd($category_product);
+    //   return view('frontend.pages.categories', compact('category_product','category_slug'));
+    // }
 
     public function page($slug){
       $page_detail = $this->page->where('slug', $slug)->first();
@@ -180,19 +235,19 @@ class FrontController extends Controller
 
     public function eSewa(){
       $gateway = "esewa";
-      $tAmt = "100";		
-      $ClientId = 'ee2c3ca1-696b-4cc5-a6be-2c40d929d453';	
-      date_default_timezone_set('Asia/Kathmandu');	
-      $date = date('y/m/d H:i:s');		
+      $tAmt = "100";
+      $ClientId = 'ee2c3ca1-696b-4cc5-a6be-2c40d929d453';
+      date_default_timezone_set('Asia/Kathmandu');
+      $date = date('y/m/d H:i:s');
       $a = str_replace("/", "", $date);
       $b = str_replace(":", "", $a);
       $c = str_replace(" ", "", $b);
-      $pid = $c. "-" . $ClientId;		
+      $pid = $c. "-" . $ClientId;
       $url = "";
       $base_url = URL::to('/');
-      
+
       if($gateway == "esewa")
-      {		
+      {
         $url = 'https://uat.esewa.com.np/epay/main?amt=' . $tAmt . '&pdc=0&pdc=0&psc=0&txAmt=0&tAmt=' . $tAmt . '&pid=' . $pid . '&scd=epay_payment' . '&su=' . $base_url . '/payment/esewa_success?q=su' .'&fu=' . $base_url . '/payment/esewa_failed?q=fu';
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
@@ -212,8 +267,8 @@ class FrontController extends Controller
         $response = curl_exec($curl);
         var_dump($response);
         $response = trim(strip_tags($response));
-        var_dump($response);			
-      }		
+        var_dump($response);
+      }
     }
 
     public function cartContent(){

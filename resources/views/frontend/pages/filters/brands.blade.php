@@ -90,13 +90,23 @@
 <script>
     // var checked=document.getElementsByClassName('.selected_brands');
     // console.log(checked);
-    var current_url='{{url()->current()}}'
+    var urlParams = new URLSearchParams(window.location.search);
+    var current_url='{{url()->current()}}';
+
+    console.log(current_url);
     function redirect(){
+        var new_url=current_url;
+
         var favorite=[];
         $.each($("input[name='selected_brands']:checked"), function(){
             favorite.push($(this).val());
         });
-        var new_url=current_url+'?brands='+favorite
+        if(urlParams.get('page')){
+            new_url +='?page='+urlParams.get('page')+"&brands="+favorite
+        }else{
+           new_url += '?brands='+favorite
+        }
+
         window.location.replace(new_url);
     }
 
