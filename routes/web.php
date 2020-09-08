@@ -12,7 +12,7 @@
 */
 
 // Auth Login
-
+Route::get('data','ProductController@getData');
 Route::get('mail', function () {
     return view('mail');
 });
@@ -50,7 +50,9 @@ Route::get('/blog/{slug}', 'FrontController@BlogDetail')->name('blog-detail');
 Route::get('/blogs', 'FrontController@Blog');
 Route::get('/shop', 'FrontController@shop')->name('shopPage');
 
-Route::get('/categories/{name}', 'FrontController@categories')->name('categories');
+Route::get('categories/{primary_cat}','FrontController@categories')->name('categories');
+Route::get('categories/{primary_cat}/{secondary_cat}','FrontController@categories')->name('categories.sec');
+// Route::get('/categories/{name}', 'FrontController@categories')->name('categories');
 Route::get('/shopping-cart', function () {
     return view('frontend.pages.shopping-cart');
 });
