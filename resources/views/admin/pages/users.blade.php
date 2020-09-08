@@ -274,14 +274,14 @@
                                                     <div class="form-group row">
                                                         <label class="col-sm-2 control-label"><strong>Company</strong> <span class="text-danger">*</span></label>
                                                         <div class="col-sm-8">
-                                                            <input type="text" class="form-control" value="{{ @$customer_data->company }}" name="company" id="company" placeholder="Name of the company">
+                                                            <input type="text" class="form-control" value="{{ @$customer_data->billing_address }}" name="billing_address" id="billing_address" placeholder="Name of the company">
                                                             <span class="messages"></span>
                                                         </div>
                                                     </div>
                                                     <div class="form-group row">
                                                         <label class="col-sm-2 control-label"><strong>Address</strong> <span class="text-danger">*</span></label>
                                                         <div class="col-sm-8">
-                                                            <input type="text" class="form-control" value="{{ @$customer_data->customer_address }}" name="customer_address" id="address" placeholder="Addresss">
+                                                            <input type="text" class="form-control" value="{{ @$customer_data->shipping_address }}" name="shipping_address" id="shipping_address" placeholder="Addresss">
                                                             <span class="messages"></span>
                                                         </div>
                                                     </div>
@@ -291,9 +291,8 @@
                                                         <div class="col-sm-8">
                                                             <select name="status" id="status" class="form-control">
                                                                 <option selected disabled>--Select user status--</option>
-                                                                <option value="verified" {{  @$customer_data->status == 'verified' ? 'selected' : ''}}>Verified</option>
-                                                                <option value="unverified" {{  @$customer_data->status == 'unverified' ? 'selected' : ''}}>Not verified</option>
-                                                                <option value="suspended" {{  @$customer_data->status == 'suspended' ? 'selected' : ''}}>Suspended</option>
+                                                                <option value="active" {{  @$customer_data->status == 'active' ? 'selected' : ''}}>Active</option>
+                                                                <option value="inactive" {{  @$customer_data->status == 'inactive' ? 'selected' : ''}}>Inactive</option>
                                                             </select>
                                                         </div>
                                                     </div>

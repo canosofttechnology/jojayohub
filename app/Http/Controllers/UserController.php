@@ -118,14 +118,14 @@ class UserController extends Controller
             }
         }
 
-        if ($data['roles'] == 'customers') {
-            $customer_data['user_id'] = $user_id;
-            $customer_data['company'] = $request->company;
-            $customer_data['customer_address'] = $request->customer_address;
-            $customer_data['status'] = $request->status;
-            $this->customer->fill($customer_data);
-            $customer_data = $this->customer->save();
-        }
+        // if ($data['roles'] == 'customers') {
+        //     $customer_data['user_id'] = $user_id;
+        //     $customer_data['company'] = $request->company;
+        //     $customer_data['customer_address'] = $request->customer_address;
+        //     $customer_data['status'] = $request->status;
+        //     $this->customer->fill($customer_data);
+        //     $customer_data = $this->customer->save();
+        // }
 
         if ($data['roles'] == 'employee') {
             $employee_data['user_id'] = $user_id;
@@ -136,17 +136,28 @@ class UserController extends Controller
             $this->employee->fill($employee_data);
             $this->employee->save();
         }
-        if ($data['roles'] == 'customer') {
-            $customer_data['user_id'] = $user_id;
-            $customer_data['billing_address'] = $request->billing_address;
-            $customer_data['shipping_address'] = $request->shipping_address;
-            $customer_data['token'] = sha1(time());
-            $customer_data['status'] = $request->status;
-            $this->customer->fill($customer_data);
-            $this->customer->save();
+        if ($data['roles'] == 'customers') {
+            $customer_data = new Customer();
+            // $customer_data=Customer::where('user_id',$user_id)->first();
+            $customer_data['user_id'] = $this->user->id;
+            $customer_data->billing_address = $request->billing_address;
+            $customer_data->shipping_address = $request->shipping_address;
+            $customer_data->status = $request->status;
+            $customer_data->save();
             Mail::to($data['email'])->send(new CustomerVerification($customer_data));
             return redirect('/customer/dashboard');
         }
+        // if ($data['roles'] == 'customers') {
+        //     $customer_data['user_id'] = $user_id;
+        //     $customer_data['billing_address'] = $request->billing_address;
+        //     $customer_data['shipping_address'] = $request->shipping_address;
+        //     $customer_data['token'] = sha1(time());
+        //     $customer_data['status'] = $request->status;
+        //     $this->customer->fill($customer_data);
+        //     $this->customer->save();
+        //     Mail::to($data['email'])->send(new CustomerVerification($customer_data));
+        //     return redirect('/customer/dashboard');
+        // }
 
         if ($status) {
             $request->session()->flash('success', 'User created successfully.');
@@ -222,7 +233,7 @@ class UserController extends Controller
         $allCategories = $this->category->get();
         $vendor_data = '';
         $employee_data = '';
-        $customer_data='';
+        $customer_data = '';
         $permitted = '';
         if ($data->roles == 'vendor') {
             $vendor_data = $this->vendor->where('user_id', $id)->first();
@@ -237,7 +248,7 @@ class UserController extends Controller
 
         $active_tab = 'create';
         $allUsers = $this->user->where('roles', '!=', 'customers')->get();
-        return view('admin.pages.users', compact('allUsers', 'allCategories', 'data', 'permitted', 'employee_data', 'vendor_data', 'active_tab','customer_data'));
+        return view('admin.pages.users', compact('allUsers', 'allCategories', 'data', 'permitted', 'employee_data', 'vendor_data', 'active_tab', 'customer_data'));
     }
 
     /**
@@ -249,6 +260,7 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // dd($request->all());
         $request['user_id'] = $id;
         $this->user = $this->user->find($id);
         if (!$this->user) {
@@ -292,14 +304,32 @@ class UserController extends Controller
             }
 
             if ($data['roles'] == 'customers') {
-                $this->customer = $this->customer->where('user_id', $id)->first();
-                $customer_data['user_id'] = $id;
-                $customer_data['company'] = $request->company;
-                $customer_data['customer_address'] = $request->customer_address;
-                $customer_data['status'] = $request->status;
-                $this->customer->fill($customer_data);
-                $customer_data = $this->customer->save();
+                $customer_data = Customer::where('user_id', $id)->first();
+                $customer_data->billing_address = $request->billing_address;
+                $customer_data->shipping_address = $request->shipping_address;
+                $customer_data->status = $request->status;
+                $customer_data->save();
+                // dd($customer_data);
+                // $this->customer = $this->customer->where('user_id', $id)->first();
+                // $customer_data['user_id'] = $id;
+                // dd($this->customer);
+                // $customer_data['billing_address'] = $request->billing_address;
+                // $customer_data['shipping_address'] = $request->shipping_address;
+                // $customer_data['status'] = $request->status;
+                // $this->customer->fill($customer_data);
+                // $customer_data = $this->customer->save();
             }
+
+            // if ($data['roles'] == 'customers') {
+            //     $this->customer = $this->customer->where('user_id', $id)->first();
+            //     $customer_data['user_id'] = $id;
+            //     dd($this->customer);
+            //     $customer_data['billing_address'] = $request->billing_address;
+            //     $customer_data['shipping_address'] = $request->shipping_address;
+            //     $customer_data['status'] = $request->status;
+            //     $this->customer->fill($customer_data);
+            //     $customer_data = $this->customer->save();
+            // }
 
             if ($data['roles'] == 'employee') {
                 $this->employee = $this->employee->where('user_id', $id)->first();
@@ -524,7 +554,7 @@ class UserController extends Controller
         $vendor_sales = null;
         $customer_purchase = null;
         $customer_data = null;
-        $vendor_products=null;
+        $vendor_products = null;
         $role = $data->roles;
         if ($role == 'vendor') {
             $vendor_data = $this->vendor->with('categoryAssigned')->where('user_id', $user_id)->first();
@@ -532,11 +562,10 @@ class UserController extends Controller
                 $allCategories = $this->category->get();
                 $permitted = $this->category_permitted->where('vendor_id', $vendor_data->id)->get();
                 $vendor_sales = Sales::with('retailer')->where('vendor_id', $vendor_data->id)->get();
-                $vendor_products =Product::where('vendor_id',$vendor_data->id)->orderBy('created_at', 'desc')->get();
+                $vendor_products = Product::where('vendor_id', $vendor_data->id)->orderBy('created_at', 'desc')->get();
 
                 // dd($vendor_sales);
             }
-
         } elseif ($role ==  'employee') {
             $employee_data = $this->employee->where('user_id', $user_id)->first();
         }
@@ -544,7 +573,7 @@ class UserController extends Controller
             $customer_data = $this->customer->where('user_id', $user_id)->first();
             $customer_purchase = Sales::with('vendor')->where('retailer_id', $user_id)->get();
         }
-        return view('admin.user.info.user_info', compact('data', 'employee_data', 'vendor_data', 'permitted', 'allCategories', 'vendor_sales', 'customer_purchase','vendor_products','customer_data'));
+        return view('admin.user.info.user_info', compact('data', 'employee_data', 'vendor_data', 'permitted', 'allCategories', 'vendor_sales', 'customer_purchase', 'vendor_products', 'customer_data'));
     }
 
     public function vendor()
