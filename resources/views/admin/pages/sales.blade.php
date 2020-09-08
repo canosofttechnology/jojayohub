@@ -140,7 +140,7 @@
                                             <label for="slug" class="block">Price per quantity (Jojayo)</label>
                                         </div>
                                         <div class="col-md-8 col-lg-10">
-                                            <input type="number" class="form-control" name="price_per_qty" placeholder="Price per piece charged by Jojayohub to retailer">
+                                            <input type="number" class="form-control" name="price_per_qty" id="price_per_qty" placeholder="Price per piece charged by Jojayohub to retailer">
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -148,7 +148,7 @@
                                             <label for="slug" class="block">Sold at</label>
                                         </div>
                                         <div class="col-md-8 col-lg-10">
-                                            <input type="number" class="form-control" name="sold_price" placeholder="Total price charged by Jojayohub">
+                                            <input type="number" class="form-control" name="sold_price" id="sold_price" placeholder="Total price charged by Jojayohub">
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -234,6 +234,11 @@
         var qty = $('#sales_quantity').val();
         var total_price = $('#price').val(qty*selling_price);
         $('#my_price').html('<input type="hidden" name="price" value="'+qty*selling_price+'">');
+    });
+    $("#price_per_qty").keyup(function (){
+        var qty = $('#sales_quantity').val();
+        let jojayo_price = $('#price_per_qty').val();
+        var total_price = $('#sold_price').val(qty*jojayo_price);
     });
 </script>
 @endsection

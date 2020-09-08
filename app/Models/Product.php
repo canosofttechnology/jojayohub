@@ -64,5 +64,39 @@ class Product extends Model
     public function productCategory(){
         return $this->belongsTo('App\Models\ProductCategory', 'category_id', 'id');
     }
+    
+    public function scopePrimary($query, $electronic_accessories){
+    return $query->whereHas('productCategory', function($query) 
+          use($electronic_accessories) {
+              $query->whereHas('secondaryCategory', function($query) 
+              use($electronic_accessories)  { 
+                  $query->whereHas('primaryCategory', function($query) 
+                  use($electronic_accessories){
+                      $query->where('name', $electronic_accessories);
+                  });
+              });
+        })
+        ->with([
+          'productCategory' => function($query) use($electronic_accessories) {
+              $query->whereHas('secondaryCategory', function($query) use($electronic_accessories)
+                { 
+                  $query->whereHas('primaryCategory', function($query) 
+                    use($electronic_accessories){
+                        $query->where('name', $electronic_accessories);
+                    });
+                });
+          },
+          'productCategory.secondaryCategory'=> function($query) use($electronic_accessories)
+          {
+                  $query->whereHas('primaryCategory', function($query) 
+                    use($electronic_accessories){
+                        $query->where('name', $electronic_accessories);
+                    });
+          },
+          'productCategory.secondaryCategory.primaryCategory' =>                   
+            function($query) use($electronic_accessories) {
+                  $query->where('name', $electronic_accessories);
+          }]);
+    }
 
 }

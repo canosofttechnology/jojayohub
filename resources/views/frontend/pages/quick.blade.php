@@ -29,7 +29,7 @@
                                     If you do not know the image size, you can remove the data-width and data-height
                                     attribute, in which case the width and height will be obtained from the naturalWidth
                                     and naturalHeight property of img.product-image__img.
-                                    --> <a href="{{ $product_images->image }}" data-width="700" data-height="700" class="product-image__body" target="_blank"><img class="product-image__img" src="{{ $product_images->image }}" alt=""></a>
+                                    --> <a href="{{ asset('uploads/products/Thumb-'.$product_images->image) }}" data-width="700" data-height="700" class="product-image__body" target="_blank"><img class="product-image__img" src="{{ asset('uploads/products/Thumb-'.$product_images->image) }}" alt=""></a>
                               </div>
                             </div>
                             @endforeach
@@ -47,8 +47,8 @@
                             @if(!empty($data->images))
                             @foreach($data->images as $product_images)
                             <div class="owl-item active" style="width: 90px; margin-right: 10px;">
-                                <a href="{{ $product_images->image }}" class="product-image product-gallery__carousel-item product-gallery__carousel-item--active">
-                                    <div class="product-image__body"><img class="product-image__img product-gallery__carousel-image" src="{{ $product_images->image }}" alt=""></div>
+                                <a href="{{ asset('uploads/products/Thumb-'.$product_images->image) }}" class="product-image product-gallery__carousel-item product-gallery__carousel-item--active">
+                                    <div class="product-image__body"><img class="product-image__img product-gallery__carousel-image" src="{{ asset('uploads/products/Thumb-'.$product_images->image) }}" alt=""></div>
                                 </a>
                             </div>
                             @endforeach

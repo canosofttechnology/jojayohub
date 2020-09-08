@@ -1,5 +1,5 @@
 @extends('frontend.layouts.master')
-@section('content')
+@section('content')         
 <div class="site__body">
 <div class="page-header">
     <div class="page-header__container container">
@@ -11,7 +11,7 @@
                     <svg class="breadcrumb-arrow" width="6px" height="9px">
                         <use xlink:href="/frontend/images/sprite.svg#arrow-rounded-right-6x9"></use>
                     </svg>
-                </li>
+                </li>                
                 <li class="breadcrumb-item active" aria-current="page">Shop</li>
             </ol>
             </nav>
@@ -199,16 +199,16 @@
                                     </ul>
                                 </div>
                                 <div class="product-card__actions">
-                                    <div class="product-card__availability">Availability: <span class="text-success">In Stock</span></div>
+                                    <div class="product-card__availability">Availability: <span class="text-success">In Stock</span></div>                                    
                                     <div class="product-card__buttons">
                                         <button class="btn btn-primary product-card__addtocart add-cart" type="button">Add To Cart</button> <button class="btn btn-secondary product-card__addtocart product-card__addtocart--list add-cart" type="button">Add To Cart</button>
-
+                                        
                                     </div>
                                 </div>
                             </div>
                         </div>
                         @endforeach
-                        @endif
+                        @endif 
                     </div>
                 </div>
                 <div class="products-view__pagination">{{$all_products->links()}}</div>
@@ -231,9 +231,7 @@
             <div class="widget-filters widget widget-filters--offcanvas--always" data-collapse data-collapse-opened-class="filter--opened">
                 <h4 class="widget-filters__title widget__title">Filters</h4>
                 <div class="widget-filters__list">
-
-                    {{-- category --}}
-                    {{-- <div class="widget-filters__item">
+                    <div class="widget-filters__item">
                         <div class="filter filter--opened" data-collapse-item>
                         <button type="button" class="filter__title" data-collapse-trigger>
                             Categories
@@ -312,10 +310,8 @@
                             </div>
                         </div>
                         </div>
-                    </div> --}}
-
-                    {{-- alt category --}}
-                    {{-- <div class="widget-filters__item">
+                    </div>
+                    <div class="widget-filters__item">
                         <div class="filter filter--opened" data-collapse-item>
                         <button type="button" class="filter__title" data-collapse-trigger>
                             Categories Alt
@@ -396,9 +392,8 @@
                             </div>
                         </div>
                         </div>
-                    </div> --}}
-
-                    {{-- <div class="widget-filters__item">
+                    </div>
+                    <div class="widget-filters__item">
                         <div class="filter filter--opened" data-collapse-item>
                         <button type="button" class="filter__title" data-collapse-trigger>
                             Price
@@ -415,9 +410,8 @@
                             </div>
                         </div>
                         </div>
-                    </div> --}}
-
-                    {{-- <div class="widget-filters__item">
+                    </div>
+                    <div class="widget-filters__item">
                         <div class="filter filter--opened" data-collapse-item>
                         <button type="button" class="filter__title" data-collapse-trigger>
                             Brand
@@ -500,9 +494,7 @@
                             </div>
                         </div>
                         </div>
-                    </div> --}}
-
-                    {{-- Brand --}}
+                    </div>
                     <div class="widget-filters__item">
                         <div class="filter filter--opened" data-collapse-item>
                         <button type="button" class="filter__title" data-collapse-trigger>
@@ -514,41 +506,13 @@
                         <div class="filter__body" data-collapse-content>
                             <div class="filter__container">
                                 <div class="filter-list">
-                                    <div class="filter-list__list">
-                                        {{-- <label class="filter-list__item">
-                                            <span class="filter-list__input input-radio">
-                                                <span class="input-radio__body">
-                                                    <input class="input-radio__input" name="filter_radio" type="radio">
-                                                    <span class="input-radio__circle"></span>
-                                                </span>
-                                            </span>
-                                            <span class="filter-list__title">Wakita </span>
-                                            <span class="filter-list__counter">7</span>
-                                        </label> --}}
-
-                                        @foreach ($brands as $brand)
-                                            <label class="filter-list__item">
-                                                <span class="filter-list__input input-check">
-                                                    <span class="input-check__body">
-                                                        <input onclick="redirect()" class="input-check__input selected_brands" {{ in_array($brand->id,$selected_brands)?'checked':''}} value="{{$brand->slug}}" name="selected_brands" type="checkbox"> <span class="input-check__box"></span>
-                                                            <svg class="input-check__icon" width="9px" height="7px">
-                                                            <use xlink:href="/frontend/images/sprite.svg#check-9x7"></use>
-                                                            </svg>
-                                                        </span>
-
-                                                </span>
-                                                <span class="filter-list__title">{{$brand->name}} </span>
-                                                {{-- <span class="filter-list__counter">7</span> --}}
-                                            </label>
-                                        @endforeach
-                                    </div>
+                                    <div class="filter-list__list"><label class="filter-list__item"><span class="filter-list__input input-radio"><span class="input-radio__body"><input class="input-radio__input" name="filter_radio" type="radio"> <span class="input-radio__circle"></span> </span></span><span class="filter-list__title">Wakita </span><span class="filter-list__counter">7</span></label> <label class="filter-list__item"><span class="filter-list__input input-radio"><span class="input-radio__body"><input class="input-radio__input" name="filter_radio" type="radio"> <span class="input-radio__circle"></span> </span></span><span class="filter-list__title">Zosch </span><span class="filter-list__counter">42</span></label> <label class="filter-list__item filter-list__item--disabled"><span class="filter-list__input input-radio"><span class="input-radio__body"><input class="input-radio__input" name="filter_radio" type="radio" checked="checked" disabled="disabled"> <span class="input-radio__circle"></span> </span></span><span class="filter-list__title">WeVALT</span></label> <label class="filter-list__item filter-list__item--disabled"><span class="filter-list__input input-radio"><span class="input-radio__body"><input class="input-radio__input" name="filter_radio" type="radio" disabled="disabled"> <span class="input-radio__circle"></span> </span></span><span class="filter-list__title">Hammer</span></label> <label class="filter-list__item"><span class="filter-list__input input-radio"><span class="input-radio__body"><input class="input-radio__input" name="filter_radio" type="radio"> <span class="input-radio__circle"></span> </span></span><span class="filter-list__title">Mitasia </span><span class="filter-list__counter">1</span></label> <label class="filter-list__item"><span class="filter-list__input input-radio"><span class="input-radio__body"><input class="input-radio__input" name="filter_radio" type="radio"> <span class="input-radio__circle"></span> </span></span><span class="filter-list__title">Metaggo </span><span class="filter-list__counter">25</span></label></div>
                                 </div>
                             </div>
                         </div>
                         </div>
                     </div>
-
-                    {{-- <div class="widget-filters__item">
+                    <div class="widget-filters__item">
                         <div class="filter filter--opened" data-collapse-item>
                         <button type="button" class="filter__title" data-collapse-trigger>
                             Color
@@ -625,7 +589,7 @@
                             </div>
                         </div>
                         </div>
-                    </div> --}}
+                    </div>
                 </div>
                 <div class="widget-filters__actions d-flex"><button class="btn btn-primary btn-sm">Filter</button> <button class="btn btn-secondary btn-sm">Reset</button></div>
             </div>
@@ -634,20 +598,6 @@
     </div>
 </div>
 </div>
-
+         
 @endsection
-@section('scripts')
-    <script>
-    var current_url='{{url()->current()}}'
-    console.log(current_url);
-    function redirect(){
-        var favorite=[];
-        $.each($("input[name='selected_brands']:checked"), function(){
-            favorite.push($(this).val());
-        });
-        var new_url=current_url+'?brands='+favorite
-        window.location.replace(new_url);
-    }
-
-    </script>
-@endsection
+   

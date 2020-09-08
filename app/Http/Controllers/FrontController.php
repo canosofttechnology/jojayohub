@@ -50,50 +50,117 @@ class FrontController extends Controller
       $all_blogs = $this->blog->take(10)->get();
       $hero_slider = $this->slider->take(3)->get();
       $latest_products = $this->products->with('images')->orderBy('created_at', 'desc')->take(12)->get();
-
+      $brand_list = $this->brand->get();
       $men_name = "Women's Fashion";
-
       $pc = PrimaryCategory::with('secondaryCategories.productCategories.products')->where('name', $men_name)->first();
-
       $men_fashion = $pc->secondaryCategories->pluck('productCategories')->collapse()->pluck('products')->collapse();
-
+      //dd($men_fashion);
       $name = "Women's Fashion";
-
       $women_fashion = Product::whereHas('productCategory', function($query)
-      use($name) {
-          $query->whereHas('secondaryCategory', function($query)
-          use($name)  {
-              $query->whereHas('primaryCategory', function($query)
-              use($name){
-                  $query->where('name', $name);
+          use($name) {
+              $query->whereHas('secondaryCategory', function($query)
+              use($name)  {
+                  $query->whereHas('primaryCategory', function($query)
+                  use($name){
+                      $query->where('name', $name);
+                  });
               });
-          });
-    })
-    ->with([
-      'productCategory' => function($query) use($name) {
-          $query->whereHas('secondaryCategory', function($query) use($name)
-            {
-              $query->whereHas('primaryCategory', function($query)
-                use($name){
-                    $query->where('name', $name);
+        })
+        ->with([
+          'productCategory' => function($query) use($name) {
+              $query->whereHas('secondaryCategory', function($query) use($name)
+                {
+                  $query->whereHas('primaryCategory', function($query)
+                    use($name){
+                        $query->where('name', $name);
+                    });
                 });
-            });
-      },
-      'productCategory.secondaryCategory'=> function($query) use($name)
-      {
-              $query->whereHas('primaryCategory', function($query)
-                use($name){
-                    $query->where('name', $name);
+          },
+          'productCategory.secondaryCategory'=> function($query) use($name)
+          {
+                  $query->whereHas('primaryCategory', function($query)
+                    use($name){
+                        $query->where('name', $name);
+                    });
+          },
+          'productCategory.secondaryCategory.primaryCategory' =>
+            function($query) use($name) {
+                  $query->where('name', $name);
+          }])->take(10)->get();
+        // Electronic device
+        $electronic_device = "Electronic Device";
+        $electronic_device_product = Product::whereHas('productCategory', function($query)
+          use($electronic_device) {
+              $query->whereHas('secondaryCategory', function($query)
+              use($electronic_device)  {
+                  $query->whereHas('primaryCategory', function($query)
+                  use($electronic_device){
+                      $query->where('name', $electronic_device);
+                  });
+              });
+        })
+        ->with([
+          'productCategory' => function($query) use($electronic_device) {
+              $query->whereHas('secondaryCategory', function($query) use($electronic_device)
+                {
+                  $query->whereHas('primaryCategory', function($query)
+                    use($electronic_device){
+                        $query->where('name', $electronic_device);
+                    });
                 });
-      },
-      'productCategory.secondaryCategory.primaryCategory' =>
-        function($query) use($name) {
-              $query->where('name', $name);
-      }])->get();
+          },
+          'productCategory.secondaryCategory'=> function($query) use($electronic_device)
+          {
+                  $query->whereHas('primaryCategory', function($query)
+                    use($electronic_device){
+                        $query->where('name', $electronic_device);
+                    });
+          },
+          'productCategory.secondaryCategory.primaryCategory' =>
+            function($query) use($electronic_device) {
+                  $query->where('name', $electronic_device);
+          }])->take(2)->get();
 
+        // Electronic accessories
+        $electronic_accessories = "Electronic Accessories";
+        $electronic_accessories_product = Product::whereHas('productCategory', function($query)
+          use($electronic_accessories) {
+              $query->whereHas('secondaryCategory', function($query)
+              use($electronic_accessories)  {
+                  $query->whereHas('primaryCategory', function($query)
+                  use($electronic_accessories){
+                      $query->where('name', $electronic_accessories);
+                  });
+              });
+        })
+        ->with([
+          'productCategory' => function($query) use($electronic_accessories) {
+              $query->whereHas('secondaryCategory', function($query) use($electronic_accessories)
+                {
+                  $query->whereHas('primaryCategory', function($query)
+                    use($electronic_accessories){
+                        $query->where('name', $electronic_accessories);
+                    });
+                });
+          },
+          'productCategory.secondaryCategory'=> function($query) use($electronic_accessories)
+          {
+                  $query->whereHas('primaryCategory', function($query)
+                    use($electronic_accessories){
+                        $query->where('name', $electronic_accessories);
+                    });
+          },
+          'productCategory.secondaryCategory.primaryCategory' =>
+            function($query) use($electronic_accessories) {
+                  $query->where('name', $electronic_accessories);
+          }])->take(2)->get();
+
+        // Tv
+        $tv_and_home = "TV & Home Appliances";
+        $tv_and_home = Product::primary("TV & Home Appliances")->get();
 
         $available_brands = $this->brand->get();
-        return view('frontend.pages.index', compact('latest_products', 'available_brands','women_fashion', 'men_fashion','all_blogs','hero_slider'));
+        return view('frontend.pages.index', compact('latest_products', 'available_brands','women_fashion', 'men_fashion','all_blogs','hero_slider','brand_list','electronic_device_product','electronic_accessories_product','tv_and_home_product'));
       }
 
     public function singleProduct($slug){
@@ -147,28 +214,16 @@ class FrontController extends Controller
       return view('frontend.pages.shipping', compact('my_location'));
     }
 
-    public function shop(Request $request){
-        $requested_brands = $request->brands;
-        $ex = explode(',', $requested_brands);
-        $selected_brands = $this->brand->whereIn('slug', $ex)->get()->pluck('id')->toArray();
-        $all_products = $this->products->with('images')
-        ->when(count($selected_brands) > 0, function ($query) use ($selected_brands) {
-            foreach($selected_brands as $brand){
-                $query->orWhere('brand_id',$brand);
-            }
-            return $query;
-        })
-        ->paginate(15);
-        $brands = $this->brand->get();
-        return view('frontend.pages.shop', compact('all_products','brands','selected_brands'));
+    public function shop(){
+      $all_products = $this->products->with('images')->paginate(15);
+      return view('frontend.pages.shop', compact('all_products'));
     }
 
-    public function categories($prime_slug, $slug = null, Request $request)
-    {
-        $requested_brands = $request->brands;
-        $ex = explode(',', $requested_brands);
+    public function categories($prime_slug, $slug = null, Request $request){
+
+        $selected_brands = $request->brands;
+        $ex = explode(',', $selected_brands);
         $selected_brands = $this->brand->whereIn('slug', $ex)->get()->pluck('id')->toArray();
-        // dd($selected_brands);
         $category_slug = isset($slug) ? $category_slug = $this->product_categories->where('slug', $slug)->first() : $this->secondary_categories->where('slug', $prime_slug)->first();
 
         $category_product = $this->products->with('images')
@@ -177,15 +232,12 @@ class FrontController extends Controller
                 return $query->whereIn('category_id', $ids);
             })
             ->when(count($selected_brands) > 0, function ($query) use ($selected_brands) {
-                foreach($selected_brands as $brand){
-                    $query->orWhere('brand_id',$brand);
-                }
-                return $query;
+                return $query->whereIn('brand_id', $selected_brands);
             })
             ->when(isset($slug), function ($query) use ($category_slug) {
                 return $query->where('category_id', $category_slug->id);
             })
-            ->paginate(15);
+            ->paginate(12);
         // $brand_ids = $category_product->pluck('brand_id')->unique()->filter();
         // $brands = $this->brand->whereIn('id', $brand_ids)->get();
         $brands = $this->brand->get();
@@ -205,13 +257,12 @@ class FrontController extends Controller
 
 
         return view('frontend.pages.categories', compact('category_product', 'category_slug', 'brands', 'selected_brands'));
-    }
 
-    // public function categories($slug){
+        // eliesha's code
     //   $category_slug = $this->product_categories->where('slug', $slug)->first(); //dd($category_slug);
     //   $category_product = $this->products->with('images')->where('category_id', $category_slug->id)->paginate(12);//dd($category_product);
     //   return view('frontend.pages.categories', compact('category_product','category_slug'));
-    // }
+    }
 
     public function page($slug){
       $page_detail = $this->page->where('slug', $slug)->first();

@@ -1,5 +1,5 @@
 @extends('frontend.layouts.master')
-@section('content')
+@section('content')         
 <div class="site__body">
 <div class="page-header">
     <div class="page-header__container container">
@@ -11,7 +11,7 @@
                     <svg class="breadcrumb-arrow" width="6px" height="9px">
                         <use xlink:href="/frontend/images/sprite.svg#arrow-rounded-right-6x9"></use>
                     </svg>
-                </li>
+                </li>                
                 <li class="breadcrumb-item active" aria-current="page">{{ $category_slug->name }}</li>
             </ol>
             </nav>
@@ -33,8 +33,7 @@
                             <svg class="filters-button__icon" width="16px" height="16px">
                                 <use xlink:href="/frontend/images/sprite.svg#filters-16"></use>
                             </svg>
-                            <span class="filters-button__title">Filters</span>
-                             {{-- <span class="filters-button__counter">3</span> --}}
+                            <span class="filters-button__title">Filters</span> <span class="filters-button__counter">3</span>
                         </button>
                         </div>
                         <div class="view-options__layout">
@@ -58,7 +57,7 @@
                             </div>
                         </div>
                         </div>
-                        <div class="view-options__legend">{{ $category_product->total() }} {{ Str::plural('item', $category_product->total()) }} found in {{ $category_slug->name}}</div>
+                        <div class="view-options__legend">Showing 6 of 98 products</div>
                         <div class="view-options__divider"></div>
                         <div class="view-options__control">
                         <label for="">Sort By</label>
@@ -85,8 +84,12 @@
                         @if(!empty($category_product))
                         @foreach($category_product as $prod_list)
                         @php
-                        $product_image = $prod_list->images[0]->image;
                         $starting_price = App\Models\ProductSize::where('product_id', $prod_list->id)->first();
+                        if(!empty($prod_list->images[0]->image)){
+                            $product_image = $prod_list->images[0]->image;
+                        } else {
+                            $product_image = "no_image.png";
+                        }
                         @endphp
                         <div class="products-list__item">
                             <div class="product-card product-card--hidden-actions">
@@ -99,116 +102,27 @@
                                 <div class="product-card__badges-list">
                                     <div class="product-card__badge product-card__badge--new">New</div>
                                 </div>
-                                <div class="product-card__image product-image"><a href="{{ route('single-product', $prod_list->slug) }}" class="product-image__body"><img class="product-image__img" src="{{ $product_image }}" alt=""></a></div>
+                                <div class="product-card__image product-image"><a href="{{ route('single-product', $prod_list->slug) }}" class="product-image__body"><img class="product-image__img" src="{{ asset('uploads/products/Thumb-'.$product_image) }}" alt=""></a></div>
                                 <div class="product-card__info">
                                     <div class="product-card__name"><a href="{{ route('single-product', $prod_list->slug) }}">{{ shortContent($prod_list->name, 10) }}...</a></div>
-                                    <div class="product-card__rating">
-                                        <div class="product-card__rating-stars">
-                                            <div class="rating">
-                                                <div class="rating__body">
-                                                    <svg class="rating__star rating__star--active" width="13px" height="12px">
-                                                    <g class="rating__fill">
-                                                        <use xlink:href="/frontend/images/sprite.svg#star-normal"></use>
-                                                    </g>
-                                                    <g class="rating__stroke">
-                                                        <use xlink:href="/frontend/images/sprite.svg#star-normal-stroke"></use>
-                                                    </g>
-                                                    </svg>
-                                                    <div class="rating__star rating__star--only-edge rating__star--active">
-                                                    <div class="rating__fill">
-                                                        <div class="fake-svg-icon"></div>
-                                                    </div>
-                                                    <div class="rating__stroke">
-                                                        <div class="fake-svg-icon"></div>
-                                                    </div>
-                                                    </div>
-                                                    <svg class="rating__star rating__star--active" width="13px" height="12px">
-                                                    <g class="rating__fill">
-                                                        <use xlink:href="/frontend/images/sprite.svg#star-normal"></use>
-                                                    </g>
-                                                    <g class="rating__stroke">
-                                                        <use xlink:href="/frontend/images/sprite.svg#star-normal-stroke"></use>
-                                                    </g>
-                                                    </svg>
-                                                    <div class="rating__star rating__star--only-edge rating__star--active">
-                                                    <div class="rating__fill">
-                                                        <div class="fake-svg-icon"></div>
-                                                    </div>
-                                                    <div class="rating__stroke">
-                                                        <div class="fake-svg-icon"></div>
-                                                    </div>
-                                                    </div>
-                                                    <svg class="rating__star rating__star--active" width="13px" height="12px">
-                                                    <g class="rating__fill">
-                                                        <use xlink:href="/frontend/images/sprite.svg#star-normal"></use>
-                                                    </g>
-                                                    <g class="rating__stroke">
-                                                        <use xlink:href="/frontend/images/sprite.svg#star-normal-stroke"></use>
-                                                    </g>
-                                                    </svg>
-                                                    <div class="rating__star rating__star--only-edge rating__star--active">
-                                                    <div class="rating__fill">
-                                                        <div class="fake-svg-icon"></div>
-                                                    </div>
-                                                    <div class="rating__stroke">
-                                                        <div class="fake-svg-icon"></div>
-                                                    </div>
-                                                    </div>
-                                                    <svg class="rating__star" width="13px" height="12px">
-                                                    <g class="rating__fill">
-                                                        <use xlink:href="/frontend/images/sprite.svg#star-normal"></use>
-                                                    </g>
-                                                    <g class="rating__stroke">
-                                                        <use xlink:href="/frontend/images/sprite.svg#star-normal-stroke"></use>
-                                                    </g>
-                                                    </svg>
-                                                    <div class="rating__star rating__star--only-edge">
-                                                    <div class="rating__fill">
-                                                        <div class="fake-svg-icon"></div>
-                                                    </div>
-                                                    <div class="rating__stroke">
-                                                        <div class="fake-svg-icon"></div>
-                                                    </div>
-                                                    </div>
-                                                    <svg class="rating__star" width="13px" height="12px">
-                                                    <g class="rating__fill">
-                                                        <use xlink:href="/frontend/images/sprite.svg#star-normal"></use>
-                                                    </g>
-                                                    <g class="rating__stroke">
-                                                        <use xlink:href="/frontend/images/sprite.svg#star-normal-stroke"></use>
-                                                    </g>
-                                                    </svg>
-                                                    <div class="rating__star rating__star--only-edge">
-                                                    <div class="rating__fill">
-                                                        <div class="fake-svg-icon"></div>
-                                                    </div>
-                                                    <div class="rating__stroke">
-                                                        <div class="fake-svg-icon"></div>
-                                                    </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="product-card__rating-legend">7 Reviews</div>
-                                    </div>
                                     <ul class="product-card__features-list">
                                         {!! shortContent($prod_list->specification, 40) !!}
                                     </ul>
                                 </div>
                                 <div class="product-card__actions">
-                                    <div class="product-card__availability">Availability: <span class="text-success">In Stock</span></div>
+                                    <div class="product-card__availability">Availability: <span class="text-success">In Stock</span></div>                                    
                                     <div class="product-card__buttons">
-                                        <button class="btn btn-primary product-card__addtocart" type="button">Add To Cart</button> <button class="btn btn-secondary product-card__addtocart product-card__addtocart--list" type="button">Add To Cart</button>
-
+                                        <button class="btn btn-primary product-card__addtocart add-cart" type="button" value="{{$prod_list->id}}">Add To Cart</button> <button class="btn btn-secondary product-card__addtocart product-card__addtocart--list add-cart" value="{{$prod_list->id}}" type="button">Add To Cart</button>
+                                        
                                     </div>
                                 </div>
                             </div>
                         </div>
                         @endforeach
-                        @endif
+                        @endif                        
                     </div>
                 </div>
-                <div class="products-view__pagination">{{$category_product->appends($_GET)->links()}}</div>
+                <div class="products-view__pagination">{{$category_product->links()}}</div>
             </div>
             </div>
         </div>
@@ -228,15 +142,87 @@
             <div class="widget-filters widget widget-filters--offcanvas--always" data-collapse data-collapse-opened-class="filter--opened">
                 <h4 class="widget-filters__title widget__title">Filters</h4>
                 <div class="widget-filters__list">
-
-                    @if (count((array)$category_slug->FinalCategory)>0)
-                       @include('frontend.pages.filters.categories')
-                   @endif
-                   @if (isset($brands))
-                    @include('frontend.pages.filters.brands')
-                   @endif
-
-                    {{-- <div class="widget-filters__item">
+                    <div class="widget-filters__item">
+                        <div class="filter filter--opened" data-collapse-item>
+                        <button type="button" class="filter__title" data-collapse-trigger>
+                            Categories
+                            <svg class="filter__arrow" width="12px" height="7px">
+                                <use xlink:href="/frontend/images/sprite.svg#arrow-rounded-down-12x7"></use>
+                            </svg>
+                        </button>
+                        <div class="filter__body" data-collapse-content>
+                            <div class="filter__container">
+                                <div class="filter-categories">
+                                    <ul class="filter-categories__list">
+                                    <li class="filter-categories__item filter-categories__item--parent">
+                                        <svg class="filter-categories__arrow" width="6px" height="9px">
+                                            <use xlink:href="/frontend/images/sprite.svg#arrow-rounded-left-6x9"></use>
+                                        </svg>
+                                        <a href="#">Construction & Repair</a>
+                                        <div class="filter-categories__counter">254</div>
+                                    </li>
+                                    <li class="filter-categories__item filter-categories__item--parent">
+                                        <svg class="filter-categories__arrow" width="6px" height="9px">
+                                            <use xlink:href="/frontend/images/sprite.svg#arrow-rounded-left-6x9"></use>
+                                        </svg>
+                                        <a href="#">Instruments</a>
+                                        <div class="filter-categories__counter">75</div>
+                                    </li>
+                                    <li class="filter-categories__item filter-categories__item--current">
+                                        <a href="#">Power Tools</a>
+                                        <div class="filter-categories__counter">21</div>
+                                    </li>
+                                    <li class="filter-categories__item filter-categories__item--child">
+                                        <a href="#">Drills & Mixers</a>
+                                        <div class="filter-categories__counter">15</div>
+                                    </li>
+                                    <li class="filter-categories__item filter-categories__item--child">
+                                        <a href="#">Cordless Screwdrivers</a>
+                                        <div class="filter-categories__counter">2</div>
+                                    </li>
+                                    <li class="filter-categories__item filter-categories__item--child">
+                                        <a href="#">Screwdrivers</a>
+                                        <div class="filter-categories__counter">30</div>
+                                    </li>
+                                    <li class="filter-categories__item filter-categories__item--child">
+                                        <a href="#">Wrenches</a>
+                                        <div class="filter-categories__counter">7</div>
+                                    </li>
+                                    <li class="filter-categories__item filter-categories__item--child">
+                                        <a href="#">Grinding Machines</a>
+                                        <div class="filter-categories__counter">5</div>
+                                    </li>
+                                    <li class="filter-categories__item filter-categories__item--child">
+                                        <a href="#">Milling Cutters</a>
+                                        <div class="filter-categories__counter">2</div>
+                                    </li>
+                                    <li class="filter-categories__item filter-categories__item--child">
+                                        <a href="#">Electric Spray Guns</a>
+                                        <div class="filter-categories__counter">9</div>
+                                    </li>
+                                    <li class="filter-categories__item filter-categories__item--child">
+                                        <a href="#">Jigsaws</a>
+                                        <div class="filter-categories__counter">4</div>
+                                    </li>
+                                    <li class="filter-categories__item filter-categories__item--child">
+                                        <a href="#">Jackhammers</a>
+                                        <div class="filter-categories__counter">0</div>
+                                    </li>
+                                    <li class="filter-categories__item filter-categories__item--child">
+                                        <a href="#">Planers</a>
+                                        <div class="filter-categories__counter">12</div>
+                                    </li>
+                                    <li class="filter-categories__item filter-categories__item--child">
+                                        <a href="#">Glue Guns</a>
+                                        <div class="filter-categories__counter">7</div>
+                                    </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="widget-filters__item">
                         <div class="filter filter--opened" data-collapse-item>
                         <button type="button" class="filter__title" data-collapse-trigger>
                             Categories Alt
@@ -317,8 +303,8 @@
                             </div>
                         </div>
                         </div>
-                    </div> --}}
-                    {{-- <div class="widget-filters__item">
+                    </div>
+                    <div class="widget-filters__item">
                         <div class="filter filter--opened" data-collapse-item>
                         <button type="button" class="filter__title" data-collapse-trigger>
                             Price
@@ -335,8 +321,8 @@
                             </div>
                         </div>
                         </div>
-                    </div> --}}
-                    {{-- <div class="widget-filters__item">
+                    </div>
+                    <div class="widget-filters__item">
                         <div class="filter filter--opened" data-collapse-item>
                         <button type="button" class="filter__title" data-collapse-trigger>
                             Brand
@@ -419,8 +405,8 @@
                             </div>
                         </div>
                         </div>
-                    </div> --}}
-                    {{-- <div class="widget-filters__item">
+                    </div>
+                    <div class="widget-filters__item">
                         <div class="filter filter--opened" data-collapse-item>
                         <button type="button" class="filter__title" data-collapse-trigger>
                             Brand
@@ -436,8 +422,8 @@
                             </div>
                         </div>
                         </div>
-                    </div> --}}
-                    {{-- <div class="widget-filters__item">
+                    </div>
+                    <div class="widget-filters__item">
                         <div class="filter filter--opened" data-collapse-item>
                         <button type="button" class="filter__title" data-collapse-trigger>
                             Color
@@ -514,7 +500,7 @@
                             </div>
                         </div>
                         </div>
-                    </div> --}}
+                    </div>
                 </div>
                 <div class="widget-filters__actions d-flex"><button class="btn btn-primary btn-sm">Filter</button> <button class="btn btn-secondary btn-sm">Reset</button></div>
             </div>
@@ -523,5 +509,6 @@
     </div>
 </div>
 </div>
-
+         
 @endsection
+   

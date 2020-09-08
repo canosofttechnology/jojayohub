@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Models\Brand;
 use App\Models\Color;
 use Illuminate\Http\Request;
@@ -20,7 +18,6 @@ use App\Models\ProductExpense;
 use App\Models\ProductAttributeDetail;
 use App\Models\AttributeValue;
 use App\Models\ProductWholesale;
-use App\Services\ProductService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -43,7 +40,7 @@ class ProductController extends Controller
     protected $attribute_value = null;
     protected $product_wholesale = null;
 
-    public function __construct(Product $product, Size $size, ProductSize $product_size, productImages $product_image, Brand $brand, SecondaryCategory $secondary_category, Color $color, ProductCategory $product_categories, Vendor $vendors, ProductExpense $product_expense, ColorDetail $color_detail, Set $set, ProductWholesale $product_wholesale, SizeDetail $size_detail, ProductAttributeDetail $attribute_value)
+    public function __construct(Product $product,Size $size,ProductSize $product_size,productImages $product_image,Brand $brand,SecondaryCategory $secondary_category,Color $color, ProductCategory $product_categories, Vendor $vendors, ProductExpense $product_expense, ColorDetail $color_detail, Set $set,ProductWholesale $product_wholesale, SizeDetail $size_detail, ProductAttributeDetail $attribute_value)
     {
         //$this->authorizeResource(Product::class, 'product');
         $this->product = $product;
@@ -70,9 +67,9 @@ class ProductController extends Controller
      */
     public function index()
     {
-        if (auth()->user()->roles == 'admin' || auth()->user()->roles == 'employee') {
+        if(auth()->user()->roles == 'admin' || auth()->user()->roles == 'employee'){
             $allProducts = $this->product->orderBy('created_at', 'desc')->get();
-        } else {
+        } else{
             $vendor_data = $this->vendors->where('user_id', auth()->user()->id)->pluck('id')->first();
             $allProducts = $this->product->where('vendor_id', $vendor_data)->orderBy('created_at', 'desc')->get();
         }
@@ -83,7 +80,7 @@ class ProductController extends Controller
         $color_list = $this->color->get();
         $vendor_list = $this->vendors->get();
         $current_vendor = $this->vendors->with('categoryAssigned')->where('user_id', auth()->user()->id)->first();
-        return view('admin.pages.products', compact('allProducts', 'active_tab', 'color_list', 'brands', 'category', 'vendor_list', 'current_vendor'));
+        return view('admin.pages.products', compact('allProducts', 'active_tab','color_list', 'brands', 'category', 'vendor_list','current_vendor'));
     }
 
     /**
@@ -100,7 +97,7 @@ class ProductController extends Controller
         $vendor_list = $this->vendors->get();
         $color_list = $this->color->get();
         $current_vendor = $this->vendors->with('categoryAssigned')->where('user_id', auth()->user()->id)->first();
-        return view('admin.pages.products', compact('color_list', 'allProducts', 'brands', 'category', 'vendor_list', 'active_tab', 'current_vendor'));
+        return view('admin.pages.products', compact('color_list','allProducts', 'brands','category', 'vendor_list', 'active_tab','current_vendor'));
     }
 
     /**
@@ -114,8 +111,8 @@ class ProductController extends Controller
         $rules = $this->product->getRules();
         $request->validate($rules);
         $data = $request->all();
-        $data['name'] = $request->name . ' ' . $request->sku;
-        $data['slug'] = $request->slug . '-' . $request->sku;
+        $data['name'] = $request->name.' '.$request->sku;
+        $data['slug'] = $request->slug.'-'.$request->sku;
         $data['sku'] = $request->sku;
         $data['description'] = $request->description;
         $data['category_id'] = $request->category_id;
@@ -126,19 +123,19 @@ class ProductController extends Controller
         $this->product->fill($data);
         $status = $this->product->save();
         $product_id = $this->product->id;
-        if ($status) {
-            if (!empty($request->image)) {
+        if($status){
+            if(!empty($request->image)){
                 $images = $request->image;
                 $images = str_replace('"', '', $images);
-                $images = str_replace(array('[', ']'), '', $images);
+                $images = str_replace(array('[',']'),'',$images);
                 $images = explode(',', $images);
-                for ($j = 0; $j < count($images);) {
+                for($j = 0; $j < count($images);){
                     $extension = pathinfo($images[$j], PATHINFO_EXTENSION);
-                    $path = public_path() . '/uploads/products/';
-                    $name = ucfirst('Product') . '-' . date('Ymdhis') . rand(0, 999) . "." . $extension;
-                    $file_name = $path . $name;
+                    $path = public_path().'/uploads/products/';
+                    $name = ucfirst('Product').'-'.date('Ymdhis').rand(0,999).".".$extension;
+                    $file_name = $path.$name;
                     $validator = Validator::make($request->only(['product_id', 'image', 'imageColor']), [
-                        'image' => 'required',
+                    'image' => 'required',
                     ]);
                     if ($validator->fails()) {
                         $delete_products = $this->product->find($product_id);
@@ -146,7 +143,7 @@ class ProductController extends Controller
                         return redirect()->back()->withErrors($validator)->withInput();
                     }
                     $this_image = file_put_contents($file_name, file_get_contents($images[$j]));
-                    if ($this_image) {
+                    if($this_image){
                         $thumbnail_image = resizeImage($path, $name, $file_name, '900x900');
                     }
                     $product_image = new productImages();
@@ -156,8 +153,9 @@ class ProductController extends Controller
                     $product_image->save();
                     $j++;
                 }
-            } elseif ($request->hasFile('images')) {
-                for ($j = 0; $j < count($request->images);) {
+
+            } elseif($request->hasFile('images')){
+                for($j = 0; $j < count($request->images);){
                     $pro_image = uploadImage($request->images[$j], 'products', '1920x930');
                     $product_image = new productImages();
                     $image_data['product_id'] = $product_id;
@@ -167,26 +165,26 @@ class ProductController extends Controller
                     $j++;
                 }
             } else {
-                $notification = array(
+               $notification = array(
                     'message' => 'Please upload images for this product.',
                     'alert-type' => 'error'
                 );
-                $delete_news = $this->product->find($product_id);
-                $success = $this->product->delete();
-                return redirect()->back()->with($notification);
+               $delete_news = $this->product->find($product_id);
+               $success = $this->product->delete();
+               return redirect()->back()->with($notification);
             }
             // product color
-            if (!empty($request->color)) {
+            if(!empty($request->color)){
                 $validator = Validator::make($request->only(['color']), [
-                    'color' => 'required|array',
-                    'color' => 'required|exists:colors,id',
+                'color' => 'required|array',
+                'color' => 'required|exists:colors,id',
                 ]);
                 if ($validator->fails()) {
                     $delete_products = $this->product->find($product_id);
                     $success = $this->product->delete();
                     return redirect()->back()->withErrors($validator)->withInput();
                 }
-                for ($c = 0; $c < count($request->color); $c++) {
+                for($c = 0; $c < count($request->color); $c++){
                     $product_set = new ColorDetail();
                     $set_data['product_id'] = $product_id;
                     $set_data['color_id'] = $request->color[$c];
@@ -199,27 +197,27 @@ class ProductController extends Controller
                     'message' => 'Please add colors for this product.',
                     'alert-type' => 'error'
                 );
-                $delete_news = $this->product->find($product_id);
-                $success = $this->product->delete();
-                return redirect()->back()->with($notification);
+               $delete_news = $this->product->find($product_id);
+               $success = $this->product->delete();
+               return redirect()->back()->with($notification);
             }
-
+            
             // Product Color
-            if (!empty($request->size)) {
-                for ($s = 0; $s < count($request->size); $s++) {
+            if(!empty($request->size)){
+                for($s = 0; $s < count($request->size); $s++){
                     $validator = Validator::make($request->only(['size', 'min_order', 'max_order', 'price', 'wholesale', 'color']), [
-                        'size' => 'required|array',
-                        'size.*' => 'required|exists:sizes,id',
-                        'price' => 'required|array',
-                        'price.*' => 'required|string',
-                        'max_order' => 'required|array',
-                        'max_order.*' => 'required|string',
-                        'price' => 'required|array',
-                        'price.*' => 'nullable|string',
-                        'min_order' => 'required|array',
-                        'min_order.*' => 'required|string',
-                        'color' => 'required|array',
-                        'color' => 'required|exists:colors,id',
+                    'size' => 'required|array',
+                    'size.*' => 'required|exists:sizes,id',
+                    'price' => 'required|array',
+                    'price.*' => 'required|string',
+                    'max_order' => 'required|array',
+                    'max_order.*' => 'required|string',
+                    'price' => 'required|array',
+                    'price.*' => 'nullable|string',
+                    'min_order' => 'required|array',
+                    'min_order.*' => 'required|string',
+                    'color' => 'required|array',
+                    'color' => 'required|exists:colors,id',
                     ]);
                     if ($validator->fails()) {
                         $delete_products = $this->product->find($product_id);
@@ -237,14 +235,14 @@ class ProductController extends Controller
                     'message' => 'Please add sizes for this product.',
                     'alert-type' => 'error'
                 );
-                $delete_news = $this->product->find($product_id);
-                $success = $this->product->delete();
-                return redirect()->back()->with($notification);
+               $delete_news = $this->product->find($product_id);
+               $success = $this->product->delete();
+               return redirect()->back()->with($notification);
             }
-
-            // Price
-            if (!empty($request->min_order)) {
-                for ($i = 0; $i < count($request->min_order); $i++) {
+            
+            // Price 
+            if(!empty($request->min_order)){
+                for($i = 0; $i < count($request->min_order); $i++){
                     $product_price = new Set();
                     $price_data['product_id'] = $product_id;
                     $price_data['quantity'] = $request->quantity;
@@ -260,30 +258,30 @@ class ProductController extends Controller
                     'message' => 'Please add product details for this product.',
                     'alert-type' => 'error'
                 );
-                $delete_news = $this->product->find($product_id);
-                $success = $this->product->delete();
-                return redirect()->back()->with($notification);
+               $delete_news = $this->product->find($product_id);
+               $success = $this->product->delete();
+               return redirect()->back()->with($notification);
             }
-
+            
             // product attributes
-            if (!empty($request->attr)) {
-                foreach ($request->attr as $key => $val) {
-                    $attr_data = new ProductAttributeDetail();
-                    $attr_detail['product_id'] = $product_id;
-                    $attr_detail['product_attribute_id'] = $key;
-                    if (is_numeric($val)) {
-                        $attr_detail['attribute_value_id'] = $val;
-                    } else {
-                        $attr_detail['attribute_value_id'] = null;
-                        $attr_detail['attribute_value'] = $val;
-                    }
-                    $attr_data->fill($attr_detail);
-                    $attr_size = $attr_data->save();
+            if(!empty($request->attr)){
+                foreach($request->attr as $key => $val){
+                $attr_data = new ProductAttributeDetail();
+                $attr_detail['product_id'] = $product_id;
+                $attr_detail['product_attribute_id'] = $key;
+                if(is_numeric($val)){
+                    $attr_detail['attribute_value_id'] = $val;
+                } else {
+                    $attr_detail['attribute_value_id'] = null;
+                    $attr_detail['attribute_value'] = $val;
+                }
+                $attr_data->fill($attr_detail);
+                $attr_size = $attr_data->save();
                 }
             }
-
+            
             // Similar Products
-            if (!empty($request->similar_poducts)) {
+            if(!empty($request->similar_poducts)){
                 $simi_ids = implode(",", $request->similar_poducts);
                 $simi_data = new SimilarProducts();
                 $simi_detail['product_id'] = $product_id;
@@ -292,13 +290,13 @@ class ProductController extends Controller
                 $simi_data->save();
             }
             $notification = array(
-                'message' => 'Product created successfully.',
-                'alert-type' => 'success'
+              'message' => 'Product created successfully.',
+              'alert-type' => 'success'
             );
         } else {
             $notification = array(
-                'message' => 'Problem while adding product.',
-                'alert-type' => 'error'
+              'message' => 'Problem while adding product.',
+              'alert-type' => 'error'
             );
         }
         return redirect()->route('products.index')->with($notification);
@@ -312,6 +310,7 @@ class ProductController extends Controller
      */
     public function show($id)
     {
+
     }
 
     /**
@@ -324,10 +323,10 @@ class ProductController extends Controller
     {
 
         $data = $this->product->find($id);
-        if (!$data) {
+        if(!$data) {
             $notification = array(
-                'message' => 'Product not found.',
-                'alert-type' => 'error'
+              'message' => 'Product not found.',
+              'alert-type' => 'error'
             );
             return redirect()->back()->with($notification);
         }
@@ -346,7 +345,7 @@ class ProductController extends Controller
         $vendor_list = $this->vendors->get();
         $allProducts = $this->product->orderBy('created_at', 'desc')->get();
         $current_vendor = $this->vendors->with('categoryAssigned')->where('user_id', auth()->user()->id)->first();
-        return view('admin.pages.products', compact('category', 'product_attr', 'wholesale_types', 'colors', 'brands', 'product_sizes', 'colors_available', 'sizes_available', 'size_data', 'data', 'image_data', 'avail_data', 'vendor_list', 'active_tab', 'color_list', 'allProducts', 'current_vendor'));
+        return view('admin.pages.products', compact('category','product_attr','wholesale_types','colors','brands','product_sizes','colors_available','sizes_available','size_data','data','image_data', 'avail_data','vendor_list', 'active_tab','color_list', 'allProducts','current_vendor'));
     }
 
     /**
@@ -359,10 +358,10 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $this->product = $this->product->with('images')->find($id);
-        if (!$this->product) {
+        if(!$this->product) {
             $notification = array(
-                'message' => 'Product not found.',
-                'alert-type' => 'error'
+              'message' => 'Product not found.',
+              'alert-type' => 'error'
             );
             return redirect()->back()->with($notification);
         }
@@ -372,14 +371,12 @@ class ProductController extends Controller
         $this->product->fill($data);
         $success = $this->product->save();
         $product_id = $this->product->id;
-        if ($success) {
-            if (!empty($request->color)) {
+        if($success){
+            if(!empty($request->color)){
                 $color_to_delete = $this->color_detail->where('product_id', $id)->get()->toArray();
-                $ids_to_delete = array_map(function ($item) {
-                    return $item['id'];
-                }, $color_to_delete);
+                $ids_to_delete = array_map(function($item){ return $item['id']; }, $color_to_delete);
                 DB::table('color_details')->whereIn('id', $ids_to_delete)->delete();
-                for ($i = 0; $i < count($request->color); $i++) {
+                for($i = 0; $i < count($request->color); $i++){
                     $product_set = new ColorDetail();
                     $set_data['product_id'] = $product_id;
                     $set_data['color_id'] = $request->color[$i];
@@ -388,13 +385,11 @@ class ProductController extends Controller
                     $product_color_id = $product_set->id;
                 }
             }
-            if (!empty($request->size)) {
+            if(!empty($request->size)){
                 $size_to_delete = $this->size_detail->where('product_id', $id)->get()->toArray();
-                $ids_to_delete = array_map(function ($item) {
-                    return $item['id'];
-                }, $size_to_delete);
+                $ids_to_delete = array_map(function($item){ return $item['id']; }, $size_to_delete);
                 DB::table('size_details')->whereIn('id', $ids_to_delete)->delete();
-                for ($s = 0; $s < count($request->size); $s++) {
+                for($s = 0; $s < count($request->size); $s++){
                     $size_detail = new SizeDetail();
                     $size_data['product_id'] = $product_id;
                     $size_data['size_id'] = $request->size[$s];
@@ -403,23 +398,21 @@ class ProductController extends Controller
                 }
             }
             // }
-            if (!empty($request->image)) {
+            if(!empty($request->image)){
                 $images_to_delete = $this->product_image->where('product_id', $id)->get()->toArray();
-                $ids_to_delete = array_map(function ($item) {
-                    return $item['id'];
-                }, $images_to_delete);
+                $ids_to_delete = array_map(function($item){ return $item['id']; }, $images_to_delete);
                 DB::table('product_images')->whereIn('id', $ids_to_delete)->delete();
                 $images = $request->image;
                 $images = str_replace('"', '', $images);
-                $images = str_replace(array('[', ']'), '', $images);
+                $images = str_replace(array('[',']'),'',$images);
                 $images = explode(',', $images);
-                for ($j = 0; $j < count($images);) {
+                for($j = 0; $j < count($images);){
                     $extension = pathinfo($images[$j], PATHINFO_EXTENSION);
-                    $path = public_path() . '/uploads/products/';
-                    $name = ucfirst('Product') . '-' . date('Ymdhis') . rand(0, 999) . "." . $extension;
-                    $file_name = $path . $name;
+                    $path = public_path().'/uploads/products/';
+                    $name = ucfirst('Product').'-'.date('Ymdhis').rand(0,999).".".$extension;
+                    $file_name = $path.$name;
                     $validator = Validator::make($request->only(['product_id', 'image', 'imageColor']), [
-                        'image' => 'required',
+                    'image' => 'required',
                     ]);
                     if ($validator->fails()) {
                         $delete_products = $this->product->find($product_id);
@@ -427,7 +420,7 @@ class ProductController extends Controller
                         return redirect()->back()->withErrors($validator)->withInput();
                     }
                     $this_image = file_put_contents($file_name, file_get_contents($images[$j]));
-                    if ($this_image) {
+                    if($this_image){
                         $thumbnail_image = resizeImage($path, $name, $file_name, '900x900');
                     }
                     $product_image = new productImages();
@@ -437,21 +430,21 @@ class ProductController extends Controller
                     $product_image->save();
                     $j++;
                 }
-                if (!empty($this->product->images)) {
-                    foreach ($this->product->images as $del_image) {
-                        if (file_exists(public_path() . '/uploads/products/' . $del_image)) {
-                            unlink(public_path() . '/uploads/products/' . $del_image);
-                            unlink(public_path() . '/uploads/products/Thumb-' . $del_image);
+                if(!empty($this->product->images)){
+                    foreach($this->product->images as $del_image){
+                        if(file_exists(public_path().'/uploads/products/'.$del_image))
+                        {
+                            unlink(public_path().'/uploads/products/'.$del_image);
+                            unlink(public_path().'/uploads/products/Thumb-'.$del_image);
                         }
                     }
                 }
-            } elseif ($request->hasFile('images')) {
+            }
+            elseif($request->hasFile('images')){
                 $images_to_delete = $this->product_image->where('product_id', $id)->get()->toArray();
-                $ids_to_delete = array_map(function ($item) {
-                    return $item['id'];
-                }, $images_to_delete);
+                $ids_to_delete = array_map(function($item){ return $item['id']; }, $images_to_delete);
                 DB::table('product_images')->whereIn('id', $ids_to_delete)->delete();
-                for ($j = 0; $j < count($request->images);) {
+                for($j = 0; $j < count($request->images);){
                     $pro_image = uploadImage($request->images[$j], 'products', '1920x930');
                     $product_image = new productImages();
                     $image_data['product_id'] = $product_id;
@@ -460,21 +453,21 @@ class ProductController extends Controller
                     $product_image->save();
                     $j++;
                 }
-                for ($m = 0; $m < count($this->product->images);) {
-                    if (file_exists(public_path() . '/uploads/products/' . $this->product->images[$m])) {
-                        unlink(public_path() . '/uploads/products/' . $this->product->images[$m]);
-                        unlink(public_path() . '/uploads/products/Thumb-' . $this->product->images[$m]);
+                for($m = 0; $m < count($this->product->images);){
+                    if(file_exists(public_path().'/uploads/products/'.$this->product->images[$m]))
+                    {
+                        unlink(public_path().'/uploads/products/'.$this->product->images[$m]);
+                        unlink(public_path().'/uploads/products/Thumb-'.$this->product->images[$m]);
                     }
                     $m++;
                 }
+
             }
-            if (!empty($request->price)) {
+            if(!empty($request->price)){
                 $set_to_delete = $this->set->where('product_id', $id)->get()->toArray();
-                $ids_to_delete = array_map(function ($item) {
-                    return $item['id'];
-                }, $set_to_delete);
+                $ids_to_delete = array_map(function($item){ return $item['id']; }, $set_to_delete);
                 DB::table('sets')->whereIn('id', $ids_to_delete)->delete();
-                for ($i = 0; $i < count($request->price); $i++) {
+                for($i = 0; $i < count($request->price); $i++){
                     $product_price = new Set();
                     $price_data['product_id'] = $product_id;
                     $price_data['min_order'] = $request->min_order[$i];
@@ -486,17 +479,15 @@ class ProductController extends Controller
                     $data_size = $product_price->save();
                 }
             }
-            if (!empty($request->attr)) {
-                foreach ($request->attr as $key => $val) {
+            if(!empty($request->attr)){
+                foreach($request->attr as $key => $val){
                     $attr_to_delete = $this->attribute_value->where('product_id', $id)->get()->toArray();
-                    $ids_to_delete = array_map(function ($item) {
-                        return $item['id'];
-                    }, $attr_to_delete);
+                    $ids_to_delete = array_map(function($item){ return $item['id']; }, $attr_to_delete);
                     DB::table('product_attribute_details')->whereIn('id', $ids_to_delete)->delete();
                     $attr_data = new ProductAttributeDetail();
                     $attr_detail['product_id'] = $product_id;
                     $attr_detail['product_attribute_id'] = $key;
-                    if (is_numeric($val)) {
+                    if(is_numeric($val)){
                         $attr_detail['attribute_value_id'] = $val;
                     } else {
                         $attr_detail['attribute_value_id'] = null;
@@ -507,13 +498,13 @@ class ProductController extends Controller
                 }
             }
             $notification = array(
-                'message' => 'Product updated successfully.',
-                'alert-type' => 'success'
+              'message' => 'Product updated successfully.',
+              'alert-type' => 'success'
             );
         } else {
             $notification = array(
-                'message' => 'Problem while updating product.',
-                'alert-type' => 'error'
+              'message' => 'Problem while updating product.',
+              'alert-type' => 'error'
             );
         }
         return redirect()->route('products.index')->with($notification);
@@ -528,77 +519,67 @@ class ProductController extends Controller
     public function destroy($id)
     {
         $this->product = $this->product->find($id);
-        if (!$this->product) {
+        if(!$this->product){
             $notification = array(
-                'message' => 'Product Not found.',
-                'alert-type' => 'error'
+              'message' => 'Product Not found.',
+              'alert-type' => 'error'
             );
             return redirect()->route('products.index')->with($notification);
         }
 
         $success = $this->product->delete();
-        if ($success) {
+        if($success){
             $notification = array(
-                'message' => 'Product deleted successfully.',
-                'alert-type' => 'success'
+              'message' => 'Product deleted successfully.',
+              'alert-type' => 'success'
             );
         } else {
             $notification = array(
-                'message' => 'Sorry! Product could not be deleted at this moment.',
-                'alert-type' => 'success'
+              'message' => 'Sorry! Product could not be deleted at this moment.',
+              'alert-type' => 'success'
             );
         }
         return redirect()->route('products.index')->with($notification);
     }
 
-    public function quickView($id)
-    {
-        $data = $this->product->with('images')->with('colors')->where('id', $id)->first();
-        if (empty($data)) {
-            return abort(404);
-        }
-        //return response()->json(['data'=> $data, 'starting_price'=> $starting_price]);
-        return view('frontend.pages.quick', compact('data'));
+    public function quickView($id){
+      $data = $this->product->with('images')->with('colors')->where('id', $id)->first();
+      if(empty($data)){
+        return abort(404);
+      }
+      //return response()->json(['data'=> $data, 'starting_price'=> $starting_price]);
+      return view('frontend.pages.quick', compact('data'));
     }
 
-    public function getSimilar(Request $request)
-    {
+    public function getSimilar(Request $request){
         $similar = $this->product->where('category_id', $request->cat_id)->get();
         return response()->json($similar);
     }
 
     public function ajaxDestroy(Request $request)
     {
-        $ids = $request->ids;
-        $success = DB::table("products")->whereIn('id', explode(",", $ids))->delete();
-        if ($success) {
-            return response()->json('Products deleted successfully.');
-        } else {
-            return response()->json('Products could not be deleted at this moment.');
-        }
+      $ids = $request->ids;
+      $success = DB::table("products")->whereIn('id',explode(",",$ids))->delete();
+      if($success){
+          return response()->json('Products deleted successfully.');
+      } else {
+          return response()->json('Products could not be deleted at this moment.');
+      }
     }
 
-    public function getVendorProduct(Request $request)
-    {
-        $product_list = $this->product->where('vendor_id', $request->id)->orderBy('created_at', 'desc')->get();
+    public function getVendorProduct(Request $request){
+        $product_list = $this->product->where('vendor_id', $request->id)->orderBy('created_at','desc')->get();
         return response()->json($product_list);
     }
 
-    public function getSet($id)
-    {
+    public function getSet($id){
         $set_detail = $this->set->where('product_id', $id)->first();
         return response()->json($set_detail);
     }
-
-    public function getSuk($id)
-    {
+    
+    public function getSuk($id){
         $suk_detail = $this->product->where('id', $id)->pluck('sku')->first();
         return response()->json($suk_detail);
     }
 
-    public function getData()
-    {
-        $products = ProductService::getProduct();
-        dd($products);
-    }
 }

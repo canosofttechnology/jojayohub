@@ -12,7 +12,7 @@
 */
 
 // Auth Login
-Route::get('data','ProductController@getData');
+
 Route::get('mail', function () {
     return view('mail');
 });
