@@ -302,6 +302,36 @@
                                                         </div>
                                                     </div>
                                                 </div>
+
+                                                <div id="customer">
+                                                    <div class="form-group row">
+                                                        <label class="col-sm-2 control-label"><strong>Company</strong> <span class="text-danger">*</span></label>
+                                                        <div class="col-sm-8">
+                                                            <input type="text" class="form-control" value="{{ @$customer_data->company }}" name="company" id="company" placeholder="Name of the company">
+                                                            <span class="messages"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-sm-2 control-label"><strong>Address</strong> <span class="text-danger">*</span></label>
+                                                        <div class="col-sm-8">
+                                                            <input type="text" class="form-control" value="{{ @$customer_data->customer_address }}" name="customer_address" id="address" placeholder="Addresss">
+                                                            <span class="messages"></span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <label class="col-sm-2 control-label"><strong>Status</strong> <span class="text-danger">*</span></label>
+                                                        <div class="col-sm-8">
+                                                            <select name="status" id="status" class="form-control">
+                                                                <option selected disabled>--Select user status--</option>
+                                                                <option value="verified" {{  @$customer_data->status == 'verified' ? 'selected' : ''}}>Verified</option>
+                                                                <option value="unverified" {{  @$customer_data->status == 'unverified' ? 'selected' : ''}}>Not verified</option>
+                                                                <option value="suspended" {{  @$customer_data->status == 'suspended' ? 'selected' : ''}}>Suspended</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label"></label>
                                                     <div class="col-sm-3">
@@ -368,14 +398,22 @@
         if(data == 'yes'){
             if('{{ @$data->roles }}' == 'vendor'){
                 $('#vendor').show();
+                $('#customer').hide();
                 $('#employee').hide();
             } else if('{{ @$data->roles }}' == 'employee'){
                 $('#vendor').hide();
+                $('#customer').hide();
                 $('#employee').show();
+            }
+            else if('{{ @$data->roles }}' == 'cutomers'){
+                $('#vendor').hide();
+                $('#customer').show();
+                $('#employee').hide();
             }
         }else if(data == 'no') {
             $('#vendor').hide();
             $('#employee').hide();
+            $('#customer').hide();
         }
 
         $("#name").keyup(function (){
@@ -386,13 +424,20 @@
             let role = (this).value;
             if(role == 'vendor'){
                 $('#vendor').show(1000);
+                $('#customer').hide(1000);
                 $('#employee').hide(1000);
             } else if(role == 'employee'){
                 $('#employee').show(1000);
+                $('#customer').hide(1000);
                 $('#vendor').hide(1000);
             } else if(role == 'admin'){
                 $('#employee').hide(1000);
                 $('#vendor').hide(1000);
+                $('#customer').hide(1000);
+            }else if(role=='customers'){
+                $('#employee').hide(1000);
+                $('#vendor').hide(1000);
+                $('#customer').show(1000);
             }
         });
     </script>
