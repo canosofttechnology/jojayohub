@@ -455,6 +455,41 @@
                         </div>
                     </div>
 
+                    {{-- Sales Types --}}
+                    <div class="widget-filters__item">
+                        <div class="filter filter--opened" data-collapse-item>
+                        <button type="button" class="filter__title" data-collapse-trigger>
+                            Wholesale
+                            <svg class="filter__arrow" width="12px" height="7px">
+                                <use xlink:href="/frontend/images/sprite.svg#arrow-rounded-down-12x7"></use>
+                            </svg>
+                        </button>
+                        <div class="filter__body" data-collapse-content>
+                            <div class="filter__container">
+                                <div class="filter-list">
+                                    <div class="filter-list__list">
+                                        @foreach ($sale_types as $sale_type)
+                                        <label class="filter-list__item">
+                                            <span class="filter-list__input input-check">
+                                                <span class="input-check__body">
+                                                    <input onclick="redirectType()" {{ in_array($sale_type->id,$selected_sales_types)?'checked':''}} class="input-check__input selected_brands" value="{{$sale_type->name}}" name="selected_wholesale" type="checkbox"> <span class="input-check__box"></span>
+                                                        <svg class="input-check__icon" width="9px" height="7px">
+                                                        <use xlink:href="/frontend/images/sprite.svg#check-9x7"></use>
+                                                        </svg>
+                                                    </span>
+
+                                            </span>
+                                            <span class="filter-list__title">{{$sale_type->name}} </span>
+                                            {{-- <span class="filter-list__counter">7</span> --}}
+                                        </label>
+                                    @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
                     {{-- brand radio --}}
                     {{-- <div class="widget-filters__item">
                         <div class="filter filter--opened" data-collapse-item>
@@ -475,7 +510,7 @@
                     </div> --}}
 
                     {{-- colors --}}
-                    <div class="widget-filters__item">
+                    {{-- <div class="widget-filters__item">
                         <div class="filter filter--opened" data-collapse-item>
                         <button type="button" class="filter__title" data-collapse-trigger>
                             Color
@@ -488,7 +523,7 @@
                                 <div class="filter-color">
                                     <div class="filter-color__list">
                                     <label class="filter-color__item">
-                                        <span class="filter-color__check input-check-color input-check-color--white">
+                                        <span class="filter-color__check input-check-color input-check-color--white" style="color: #fff;">
                                             <label class="input-check-color__body">
                                                 <input class="input-check-color__input" type="checkbox">
                                                     <span class="input-check-color__box"></span>
@@ -498,10 +533,8 @@
                                                     <span class="input-check-color__stick"></span>
                                             </label>
                                         </span>
-                                        <span class="filter-list__title">Red</span>
                                     </label>
-
-                                    {{-- <label class="filter-color__item">
+                                    <label class="filter-color__item">
                                         <span class="filter-color__check input-check-color input-check-color--light" style="color: #d9d9d9;">
                                     <label class="input-check-color__body"><input class="input-check-color__input" type="checkbox"> <span class="input-check-color__box"></span> <svg class="input-check-color__icon" width="12px" height="9px"><use xlink:href="/frontend/images/sprite.svg#check-12x9"></use></svg> <span class="input-check-color__stick"></span></label></span></label>
                                     <label class="filter-color__item">
@@ -557,13 +590,13 @@
                                     <label class="input-check-color__body"><input class="input-check-color__input" type="checkbox"> <span class="input-check-color__box"></span> <svg class="input-check-color__icon" width="12px" height="9px"><use xlink:href="/frontend/images/sprite.svg#check-12x9"></use></svg> <span class="input-check-color__stick"></span></label></span></label>
                                     <label class="filter-color__item">
                                         <span class="filter-color__check input-check-color" style="color: #e53981;">
-                                    <label class="input-check-color__body"><input class="input-check-color__input" type="checkbox"> <span class="input-check-color__box"></span> <svg class="input-check-color__icon" width="12px" height="9px"><use xlink:href="/frontend/images/sprite.svg#check-12x9"></use></svg> <span class="input-check-color__stick"></span></label></span></label> --}}
+                                    <label class="input-check-color__body"><input class="input-check-color__input" type="checkbox"> <span class="input-check-color__box"></span> <svg class="input-check-color__icon" width="12px" height="9px"><use xlink:href="/frontend/images/sprite.svg#check-12x9"></use></svg> <span class="input-check-color__stick"></span></label></span></label>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         </div>
-                    </div>
+                    </div> --}}
 
                 </div>
                 <div class="widget-filters__actions d-flex"><button class="btn btn-primary btn-sm">Filter</button> <button class="btn btn-secondary btn-sm">Reset</button></div>
@@ -579,6 +612,7 @@
     <script>
     var current_url='{{url()->current()}}'
     var favorite=[];
+    var wholesale_type=[];
     function redirect(){
         var new_url=getUrl();
         window.location.replace(new_url);
@@ -593,6 +627,19 @@
         window.location.replace(new_url);
     })
 
+    function redirectType(){
+
+        var new_url=getUrl();
+        $.each($("input[name='selected_wholesale']:checked"), function(){
+            wholesale_type.push($(this).val());
+        });
+
+        if(favorite.length>0)
+            new_url +="&sales_type="+wholesale_type;
+        else
+            new_url +="?sales_type="+wholesale_type;
+        window.location.replace(new_url);
+    }
     $('#onPerPage').change(function(){
         // var sel_value=this.value;
         // var new_url=getUrl();
@@ -609,6 +656,9 @@
         if(favorite.length>0){
             new_url +='?brands='+favorite
         }
+        // if(wholesale_type.length>0){
+        //     new_url +=
+        // }
         return new_url;
     }
     </script>

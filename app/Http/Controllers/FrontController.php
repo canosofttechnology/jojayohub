@@ -14,6 +14,7 @@ use App\Models\Page;
 use App\Models\Blog;
 use App\Models\Brand;
 use App\Models\Slider;
+use App\Models\Wholesale;
 use Illuminate\Http\Request;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use URL;
@@ -222,29 +223,39 @@ class FrontController extends Controller
 
     public function shop(Request $request)
     {
+        $selected_sales_types = $request->sales_type;
+        $ex = explode(',', $selected_sales_types);
+        $selected_sales_types = Wholesale::whereIn('name', $ex)->get()->pluck('id')->toArray();
 
         $sort = $request->sort;
+        $requested_sales_type = $request->sales_type;
         if (!isset($sort))
             $sort = 'asc';
         $requested_brands = $request->brands;
         $ex = explode(',', $requested_brands);
         $selected_brands = $this->brand->whereIn('slug', $ex)->get()->pluck('id')->toArray();
-        $all_products = $this->products->with('images')
+        $all_products = $this->products->with('images', 'set')
             ->when(count($selected_brands) > 0, function ($query) use ($selected_brands) {
                 foreach ($selected_brands as $brand) {
                     $query->orWhere('brand_id', $brand);
                 }
                 return $query;
             })
+            ->when(count($selected_sales_types) > 0, function ($q) use ($selected_sales_types) {
+                $q->whereHas('set', function ($q) use ($selected_sales_types) {
+                    $q->whereIn('wholesale_id', $selected_sales_types);
+                });
+            })
+
             ->when($sort, function ($query) use ($sort) {
                 $query->orderBy('name', $sort);
             })
-            ->with('getColors')
+            // ->with('getColors')
             ->paginate(15);
-
-
+        // dd($selected_sales_types);
+        $sale_types = Wholesale::all();
         $brands = $this->brand->get();
-        return view('frontend.pages.shop', compact('all_products', 'brands', 'selected_brands', 'sort'));
+        return view('frontend.pages.shop', compact('all_products', 'brands', 'selected_brands', 'sort', 'sale_types','selected_sales_types'));
 
         //   $all_products = $this->products->with('images')->paginate(15);
         //   return view('frontend.pages.shop', compact('all_products'));
@@ -252,7 +263,10 @@ class FrontController extends Controller
 
     public function categories($prime_slug, $slug = null, Request $request)
     {
-        // dd($request->all());
+        $selected_sales_types = $request->sales_type;
+        $ex = explode(',', $selected_sales_types);
+        $selected_sales_types = Wholesale::whereIn('name', $ex)->get()->pluck('id')->toArray();
+
         $sort = $request->sort;
         if (!isset($sort))
             $sort = 'asc';
@@ -273,30 +287,22 @@ class FrontController extends Controller
             ->when(isset($slug), function ($query) use ($category_slug) {
                 return $query->where('category_id', $category_slug->id);
             })
+            ->when(count($selected_sales_types) > 0, function ($q) use ($selected_sales_types) {
+                $q->whereHas('set', function ($q) use ($selected_sales_types) {
+                    $q->whereIn('wholesale_id', $selected_sales_types);
+                });
+            })
             ->when($sort, function ($query) use ($sort) {
                 $query->orderBy('name', $sort);
             })
 
             ->paginate(12);
-        // $brand_ids = $category_product->pluck('brand_id')->unique()->filter();
-        // $brands = $this->brand->whereIn('id', $brand_ids)->get();
+
         $brands = $this->brand->get();
-        // dd($category_product);
-        // if (!isset($slug)) {
-        //     $category_slug = $this->secondary_categories->where('slug', $prime_slug)->first();
-        //     $ids = $category_slug->FinalCategory()->pluck('id');
-        //     $category_product = $this->products->with('images')->whereIn('category_id', $ids)->paginate(12);
-        //     $brand_ids = $category_product->pluck('brand_id')->unique()->filter();
-        //     $brands = $this->brand->whereIn('id', $brand_ids)->get();
-        // }
-
-        // if (isset($slug)) {
-        //     $category_slug = $this->product_categories->where('slug', $slug)->first();
-        //     $category_product = $this->products->with('images')->where('category_id', $category_slug->id)->paginate(12);
-        // }
+        $sale_types = Wholesale::all();
 
 
-        return view('frontend.pages.categories', compact('category_product', 'category_slug', 'brands', 'selected_brands','sort'));
+        return view('frontend.pages.categories', compact('category_product', 'category_slug', 'brands', 'selected_brands', 'sort','sale_types','selected_sales_types'));
 
         // eliesha's code
         //   $category_slug = $this->product_categories->where('slug', $slug)->first(); //dd($category_slug);
