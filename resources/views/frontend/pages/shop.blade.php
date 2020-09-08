@@ -213,7 +213,7 @@
                         @endif
                     </div>
                 </div>
-                <div class="products-view__pagination">{{$all_products->links()}}</div>
+                <div class="products-view__pagination">{{$all_products->appends($_GET)->links()}}</div>
             </div>
             </div>
         </div>

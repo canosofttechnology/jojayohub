@@ -123,7 +123,7 @@
                         @endif
                     </div>
                 </div>
-                <div class="products-view__pagination">{{$category_product->links()}}</div>
+                <div class="products-view__pagination">{{$category_product->appends($_GET)->links()}}</div>
             </div>
             </div>
         </div>
