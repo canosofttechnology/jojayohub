@@ -32,7 +32,7 @@ class Product extends Model
     public function category(){
         return $this->belongsTo('App\Models\ProductCategory');
     }
-    
+
     public function brand(){
         return $this->belongsTo('App\Models\Brand');
     }
@@ -64,13 +64,13 @@ class Product extends Model
     public function productCategory(){
         return $this->belongsTo('App\Models\ProductCategory', 'category_id', 'id');
     }
-    
+
     public function scopePrimary($query, $electronic_accessories){
-    return $query->whereHas('productCategory', function($query) 
+    return $query->whereHas('productCategory', function($query)
           use($electronic_accessories) {
-              $query->whereHas('secondaryCategory', function($query) 
-              use($electronic_accessories)  { 
-                  $query->whereHas('primaryCategory', function($query) 
+              $query->whereHas('secondaryCategory', function($query)
+              use($electronic_accessories)  {
+                  $query->whereHas('primaryCategory', function($query)
                   use($electronic_accessories){
                       $query->where('name', $electronic_accessories);
                   });
@@ -79,8 +79,8 @@ class Product extends Model
         ->with([
           'productCategory' => function($query) use($electronic_accessories) {
               $query->whereHas('secondaryCategory', function($query) use($electronic_accessories)
-                { 
-                  $query->whereHas('primaryCategory', function($query) 
+                {
+                  $query->whereHas('primaryCategory', function($query)
                     use($electronic_accessories){
                         $query->where('name', $electronic_accessories);
                     });
@@ -88,15 +88,19 @@ class Product extends Model
           },
           'productCategory.secondaryCategory'=> function($query) use($electronic_accessories)
           {
-                  $query->whereHas('primaryCategory', function($query) 
+                  $query->whereHas('primaryCategory', function($query)
                     use($electronic_accessories){
                         $query->where('name', $electronic_accessories);
                     });
           },
-          'productCategory.secondaryCategory.primaryCategory' =>                   
+          'productCategory.secondaryCategory.primaryCategory' =>
             function($query) use($electronic_accessories) {
                   $query->where('name', $electronic_accessories);
           }]);
+    }
+
+    public function getColors(){
+        return $this->belongsToMany(Color::class,'color_details');
     }
 
 }

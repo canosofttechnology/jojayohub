@@ -475,7 +475,7 @@
                     </div> --}}
 
                     {{-- colors --}}
-                    {{-- <div class="widget-filters__item">
+                    <div class="widget-filters__item">
                         <div class="filter filter--opened" data-collapse-item>
                         <button type="button" class="filter__title" data-collapse-trigger>
                             Color
@@ -488,9 +488,20 @@
                                 <div class="filter-color">
                                     <div class="filter-color__list">
                                     <label class="filter-color__item">
-                                        <span class="filter-color__check input-check-color input-check-color--white" style="color: #fff;">
-                                    <label class="input-check-color__body"><input class="input-check-color__input" type="checkbox"> <span class="input-check-color__box"></span> <svg class="input-check-color__icon" width="12px" height="9px"><use xlink:href="/frontend/images/sprite.svg#check-12x9"></use></svg> <span class="input-check-color__stick"></span></label></span></label>
-                                    <label class="filter-color__item">
+                                        <span class="filter-color__check input-check-color input-check-color--white">
+                                            <label class="input-check-color__body">
+                                                <input class="input-check-color__input" type="checkbox">
+                                                    <span class="input-check-color__box"></span>
+                                                    <svg class="input-check-color__icon" width="12px" height="9px">
+                                                        <use xlink:href="/frontend/images/sprite.svg#check-12x9"></use>
+                                                    </svg>
+                                                    <span class="input-check-color__stick"></span>
+                                            </label>
+                                        </span>
+                                        <span class="filter-list__title">Red</span>
+                                    </label>
+
+                                    {{-- <label class="filter-color__item">
                                         <span class="filter-color__check input-check-color input-check-color--light" style="color: #d9d9d9;">
                                     <label class="input-check-color__body"><input class="input-check-color__input" type="checkbox"> <span class="input-check-color__box"></span> <svg class="input-check-color__icon" width="12px" height="9px"><use xlink:href="/frontend/images/sprite.svg#check-12x9"></use></svg> <span class="input-check-color__stick"></span></label></span></label>
                                     <label class="filter-color__item">
@@ -546,13 +557,13 @@
                                     <label class="input-check-color__body"><input class="input-check-color__input" type="checkbox"> <span class="input-check-color__box"></span> <svg class="input-check-color__icon" width="12px" height="9px"><use xlink:href="/frontend/images/sprite.svg#check-12x9"></use></svg> <span class="input-check-color__stick"></span></label></span></label>
                                     <label class="filter-color__item">
                                         <span class="filter-color__check input-check-color" style="color: #e53981;">
-                                    <label class="input-check-color__body"><input class="input-check-color__input" type="checkbox"> <span class="input-check-color__box"></span> <svg class="input-check-color__icon" width="12px" height="9px"><use xlink:href="/frontend/images/sprite.svg#check-12x9"></use></svg> <span class="input-check-color__stick"></span></label></span></label>
+                                    <label class="input-check-color__body"><input class="input-check-color__input" type="checkbox"> <span class="input-check-color__box"></span> <svg class="input-check-color__icon" width="12px" height="9px"><use xlink:href="/frontend/images/sprite.svg#check-12x9"></use></svg> <span class="input-check-color__stick"></span></label></span></label> --}}
                                     </div>
                                 </div>
                             </div>
                         </div>
                         </div>
-                    </div> --}}
+                    </div>
 
                 </div>
                 <div class="widget-filters__actions d-flex"><button class="btn btn-primary btn-sm">Filter</button> <button class="btn btn-secondary btn-sm">Reset</button></div>

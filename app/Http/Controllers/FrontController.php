@@ -239,8 +239,10 @@ class FrontController extends Controller
             ->when($sort, function ($query) use ($sort) {
                 $query->orderBy('name', $sort);
             })
-
+            ->with('getColors')
             ->paginate(15);
+
+
         $brands = $this->brand->get();
         return view('frontend.pages.shop', compact('all_products', 'brands', 'selected_brands', 'sort'));
 
@@ -259,9 +261,7 @@ class FrontController extends Controller
         $selected_brands = $this->brand->whereIn('slug', $ex)->get()->pluck('id')->toArray();
         // $category_slug = isset($slug) ? 'yes':'on';
         $category_slug = isset($slug) ? $this->product_categories->where('slug', $slug)->first() : $this->secondary_categories->where('slug', $prime_slug)->first();
-// dd($prime_slug);
-        // dd($slug);
-//         dd($category_slug);
+
         $category_product = $this->products->with('images')
             ->when(!isset($slug), function ($query) use ($category_slug) {
                 $ids = $category_slug->FinalCategory()->pluck('id');
