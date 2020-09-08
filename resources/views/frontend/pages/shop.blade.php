@@ -1,5 +1,5 @@
 @extends('frontend.layouts.master')
-@section('content')         
+@section('content')
 <div class="site__body">
 <div class="page-header">
     <div class="page-header__container container">
@@ -11,7 +11,7 @@
                     <svg class="breadcrumb-arrow" width="6px" height="9px">
                         <use xlink:href="/frontend/images/sprite.svg#arrow-rounded-right-6x9"></use>
                     </svg>
-                </li>                
+                </li>
                 <li class="breadcrumb-item active" aria-current="page">Shop</li>
             </ol>
             </nav>
@@ -33,7 +33,8 @@
                             <svg class="filters-button__icon" width="16px" height="16px">
                                 <use xlink:href="/frontend/images/sprite.svg#filters-16"></use>
                             </svg>
-                            <span class="filters-button__title">Filters</span> <span class="filters-button__counter">3</span>
+                            <span class="filters-button__title">Filters</span>
+                             {{-- <span class="filters-button__counter">3</span> --}}
                         </button>
                         </div>
                         <div class="view-options__layout">
@@ -57,25 +58,26 @@
                             </div>
                         </div>
                         </div>
-                        <div class="view-options__legend">Showing 6 of 98 products</div>
+                        <div class="view-options__legend">{{ $all_products->total() }} {{ Str::plural('item', $all_products->total()) }} found</div>
                         <div class="view-options__divider"></div>
                         <div class="view-options__control">
                         <label for="">Sort By</label>
                         <div>
-                            <select class="form-control form-control-sm" name="" id="">
-                                <option value="">Default</option>
-                                <option value="">Name (A-Z)</option>
+                            <select class="form-control form-control-sm" name="product_sort" id="onSort">
+                                <option value="asc" {{$sort=='asc'?'selected':''}}>Name (A-Z)</option>
+                                <option value="desc" {{$sort=='desc'?'selected':''}}>Name (Z-A)</option>
                             </select>
                         </div>
                         </div>
                         <div class="view-options__control">
-                        <label for="">Show</label>
-                        <div>
-                            <select class="form-control form-control-sm" name="" id="">
-                                <option value="">12</option>
-                                <option value="">24</option>
+                        {{-- <label for="">Show</label> --}}
+                        {{-- <div>
+                            <select class="form-control form-control-sm" name="" id="onPerPage">
+                                <option value="">15</option>
+                                <option value="">30</option>
+                                <option value="">45</option>
                             </select>
-                        </div>
+                        </div> --}}
                         </div>
                     </div>
                 </div>
@@ -199,16 +201,16 @@
                                     </ul>
                                 </div>
                                 <div class="product-card__actions">
-                                    <div class="product-card__availability">Availability: <span class="text-success">In Stock</span></div>                                    
+                                    <div class="product-card__availability">Availability: <span class="text-success">In Stock</span></div>
                                     <div class="product-card__buttons">
                                         <button class="btn btn-primary product-card__addtocart add-cart" type="button">Add To Cart</button> <button class="btn btn-secondary product-card__addtocart product-card__addtocart--list add-cart" type="button">Add To Cart</button>
-                                        
+
                                     </div>
                                 </div>
                             </div>
                         </div>
                         @endforeach
-                        @endif 
+                        @endif
                     </div>
                 </div>
                 <div class="products-view__pagination">{{$all_products->links()}}</div>
@@ -231,7 +233,9 @@
             <div class="widget-filters widget widget-filters--offcanvas--always" data-collapse data-collapse-opened-class="filter--opened">
                 <h4 class="widget-filters__title widget__title">Filters</h4>
                 <div class="widget-filters__list">
-                    <div class="widget-filters__item">
+
+                    {{-- category --}}
+                    {{-- <div class="widget-filters__item">
                         <div class="filter filter--opened" data-collapse-item>
                         <button type="button" class="filter__title" data-collapse-trigger>
                             Categories
@@ -310,8 +314,10 @@
                             </div>
                         </div>
                         </div>
-                    </div>
-                    <div class="widget-filters__item">
+                    </div> --}}
+                    {{-- alt category --}}
+
+                    {{-- <div class="widget-filters__item">
                         <div class="filter filter--opened" data-collapse-item>
                         <button type="button" class="filter__title" data-collapse-trigger>
                             Categories Alt
@@ -392,8 +398,10 @@
                             </div>
                         </div>
                         </div>
-                    </div>
-                    <div class="widget-filters__item">
+                    </div> --}}
+
+                    {{-- price --}}
+                    {{-- <div class="widget-filters__item">
                         <div class="filter filter--opened" data-collapse-item>
                         <button type="button" class="filter__title" data-collapse-trigger>
                             Price
@@ -410,7 +418,9 @@
                             </div>
                         </div>
                         </div>
-                    </div>
+                    </div> --}}
+
+                    {{-- Brand checkbox --}}
                     <div class="widget-filters__item">
                         <div class="filter filter--opened" data-collapse-item>
                         <button type="button" class="filter__title" data-collapse-trigger>
@@ -423,79 +433,30 @@
                             <div class="filter__container">
                                 <div class="filter-list">
                                     <div class="filter-list__list">
-                                    <label class="filter-list__item">
-                                        <span class="filter-list__input input-check">
-                                            <span class="input-check__body">
-                                                <input class="input-check__input" type="checkbox"> <span class="input-check__box"></span>
-                                                <svg class="input-check__icon" width="9px" height="7px">
-                                                <use xlink:href="/frontend/images/sprite.svg#check-9x7"></use>
-                                                </svg>
+                                        @foreach ($brands as $brand)
+                                        <label class="filter-list__item">
+                                            <span class="filter-list__input input-check">
+                                                <span class="input-check__body">
+                                                    <input onclick="redirect()" class="input-check__input selected_brands" {{ in_array($brand->id,$selected_brands)?'checked':''}} value="{{$brand->slug}}" name="selected_brands" type="checkbox"> <span class="input-check__box"></span>
+                                                        <svg class="input-check__icon" width="9px" height="7px">
+                                                        <use xlink:href="/frontend/images/sprite.svg#check-9x7"></use>
+                                                        </svg>
+                                                    </span>
+
                                             </span>
-                                        </span>
-                                        <span class="filter-list__title">Wakita </span><span class="filter-list__counter">7</span>
-                                    </label>
-                                    <label class="filter-list__item">
-                                        <span class="filter-list__input input-check">
-                                            <span class="input-check__body">
-                                                <input class="input-check__input" type="checkbox" checked="checked"> <span class="input-check__box"></span>
-                                                <svg class="input-check__icon" width="9px" height="7px">
-                                                <use xlink:href="/frontend/images/sprite.svg#check-9x7"></use>
-                                                </svg>
-                                            </span>
-                                        </span>
-                                        <span class="filter-list__title">Zosch </span><span class="filter-list__counter">42</span>
-                                    </label>
-                                    <label class="filter-list__item filter-list__item--disabled">
-                                        <span class="filter-list__input input-check">
-                                            <span class="input-check__body">
-                                                <input class="input-check__input" type="checkbox" checked="checked" disabled="disabled"> <span class="input-check__box"></span>
-                                                <svg class="input-check__icon" width="9px" height="7px">
-                                                <use xlink:href="/frontend/images/sprite.svg#check-9x7"></use>
-                                                </svg>
-                                            </span>
-                                        </span>
-                                        <span class="filter-list__title">WeVALT</span>
-                                    </label>
-                                    <label class="filter-list__item filter-list__item--disabled">
-                                        <span class="filter-list__input input-check">
-                                            <span class="input-check__body">
-                                                <input class="input-check__input" type="checkbox" disabled="disabled"> <span class="input-check__box"></span>
-                                                <svg class="input-check__icon" width="9px" height="7px">
-                                                <use xlink:href="/frontend/images/sprite.svg#check-9x7"></use>
-                                                </svg>
-                                            </span>
-                                        </span>
-                                        <span class="filter-list__title">Hammer</span>
-                                    </label>
-                                    <label class="filter-list__item">
-                                        <span class="filter-list__input input-check">
-                                            <span class="input-check__body">
-                                                <input class="input-check__input" type="checkbox"> <span class="input-check__box"></span>
-                                                <svg class="input-check__icon" width="9px" height="7px">
-                                                <use xlink:href="/frontend/images/sprite.svg#check-9x7"></use>
-                                                </svg>
-                                            </span>
-                                        </span>
-                                        <span class="filter-list__title">Mitasia </span><span class="filter-list__counter">1</span>
-                                    </label>
-                                    <label class="filter-list__item">
-                                        <span class="filter-list__input input-check">
-                                            <span class="input-check__body">
-                                                <input class="input-check__input" type="checkbox"> <span class="input-check__box"></span>
-                                                <svg class="input-check__icon" width="9px" height="7px">
-                                                <use xlink:href="/frontend/images/sprite.svg#check-9x7"></use>
-                                                </svg>
-                                            </span>
-                                        </span>
-                                        <span class="filter-list__title">Metaggo </span><span class="filter-list__counter">25</span>
-                                    </label>
+                                            <span class="filter-list__title">{{$brand->name}} </span>
+                                            {{-- <span class="filter-list__counter">7</span> --}}
+                                        </label>
+                                    @endforeach
                                     </div>
                                 </div>
                             </div>
                         </div>
                         </div>
                     </div>
-                    <div class="widget-filters__item">
+
+                    {{-- brand radio --}}
+                    {{-- <div class="widget-filters__item">
                         <div class="filter filter--opened" data-collapse-item>
                         <button type="button" class="filter__title" data-collapse-trigger>
                             Brand
@@ -511,8 +472,10 @@
                             </div>
                         </div>
                         </div>
-                    </div>
-                    <div class="widget-filters__item">
+                    </div> --}}
+
+                    {{-- colors --}}
+                    {{-- <div class="widget-filters__item">
                         <div class="filter filter--opened" data-collapse-item>
                         <button type="button" class="filter__title" data-collapse-trigger>
                             Color
@@ -589,7 +552,8 @@
                             </div>
                         </div>
                         </div>
-                    </div>
+                    </div> --}}
+
                 </div>
                 <div class="widget-filters__actions d-flex"><button class="btn btn-primary btn-sm">Filter</button> <button class="btn btn-secondary btn-sm">Reset</button></div>
             </div>
@@ -598,6 +562,39 @@
     </div>
 </div>
 </div>
-         
+
 @endsection
-   
+@section('scripts')
+    <script>
+    var current_url='{{url()->current()}}'
+    function redirect(){
+        var new_url=getUrl();
+        window.location.replace(new_url);
+    }
+    $('#onSort').change(function(){
+        var sel_value=this.value;
+        var new_url=getUrl();
+        new_url=new_url+"&sort="+sel_value;
+        window.location.replace(new_url);
+    })
+
+    $('#onPerPage').change(function(){
+        // var sel_value=this.value;
+        // var new_url=getUrl();
+        // new_url=new_url+"&perpage="+sel_value;
+        // window.location.replace(new_url);
+    })
+
+    function getUrl(url=null){
+        var new_url=current_url;
+        var favorite=[];
+        $.each($("input[name='selected_brands']:checked"), function(){
+            favorite.push($(this).val());
+        });
+        if(favorite.length>0){
+            new_url +='?brands='+favorite
+        }
+        return new_url;
+    }
+    </script>
+@endsection
