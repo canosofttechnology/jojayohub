@@ -567,6 +567,7 @@
 @section('scripts')
     <script>
     var current_url='{{url()->current()}}'
+    var favorite=[];
     function redirect(){
         var new_url=getUrl();
         window.location.replace(new_url);
@@ -574,7 +575,10 @@
     $('#onSort').change(function(){
         var sel_value=this.value;
         var new_url=getUrl();
-        new_url=new_url+"&sort="+sel_value;
+        if(favorite.length>0)
+        new_url +="&sort="+sel_value;
+        else
+        new_url +="?sort="+sel_value;
         window.location.replace(new_url);
     })
 
@@ -587,7 +591,7 @@
 
     function getUrl(url=null){
         var new_url=current_url;
-        var favorite=[];
+
         $.each($("input[name='selected_brands']:checked"), function(){
             favorite.push($(this).val());
         });

@@ -222,6 +222,7 @@ class FrontController extends Controller
 
     public function shop(Request $request)
     {
+
         $sort = $request->sort;
         if (!isset($sort))
             $sort = 'asc';

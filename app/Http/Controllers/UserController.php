@@ -123,17 +123,28 @@ class UserController extends Controller
             $this->employee->fill($employee_data);
             $this->employee->save();
         }
-        if ($data['roles'] == 'customer') {
-            $customer_data['user_id'] = $user_id;
-            $customer_data['billing_address'] = $request->billing_address;
-            $customer_data['shipping_address'] = $request->shipping_address;
-            $customer_data['token'] = sha1(time());
-            $customer_data['status'] = $request->status;
-            $this->customer->fill($customer_data);
-            $this->customer->save();
+        if ($data['roles'] == 'customers') {
+            $customer_data = new Customer();
+            // $customer_data=Customer::where('user_id',$user_id)->first();
+            $customer_data['user_id'] = $this->user->id;
+            $customer_data->billing_address = $request->billing_address;
+            $customer_data->shipping_address = $request->shipping_address;
+            $customer_data->status = $request->status;
+            $customer_data->save();
             Mail::to($data['email'])->send(new CustomerVerification($customer_data));
             return redirect('/customer/dashboard');
         }
+        // if ($data['roles'] == 'customers') {
+        //     $customer_data['user_id'] = $user_id;
+        //     $customer_data['billing_address'] = $request->billing_address;
+        //     $customer_data['shipping_address'] = $request->shipping_address;
+        //     $customer_data['token'] = sha1(time());
+        //     $customer_data['status'] = $request->status;
+        //     $this->customer->fill($customer_data);
+        //     $this->customer->save();
+        //     Mail::to($data['email'])->send(new CustomerVerification($customer_data));
+        //     return redirect('/customer/dashboard');
+        // }
 
         if ($status) {
             $request->session()->flash('success', 'User created successfully.');
@@ -280,6 +291,17 @@ class UserController extends Controller
                 $employee_data['status'] = $request->status;
                 $this->employee->fill($employee_data);
                 $this->employee->save();
+            }
+
+            if($data['roles']=='customers'){
+                // $customer_data = new Customer();
+            $customer_data=Customer::where('user_id',$id)->first();
+            $customer_data['user_id'] = $this->user->id;
+            $customer_data->billing_address = $request->billing_address;
+            $customer_data->shipping_address = $request->shipping_address;
+            $customer_data->status = $request->status;
+            $customer_data->save();
+            Mail::to($data['email'])->send(new CustomerVerification($customer_data));
             }
         }
         $request->session()->flash('success', 'User updated successfully.');
