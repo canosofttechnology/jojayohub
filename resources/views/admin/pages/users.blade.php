@@ -305,14 +305,14 @@
 
                                                 <div id="customer">
                                                     <div class="form-group row">
-                                                        <label class="col-sm-2 control-label"><strong>Company</strong> <span class="text-danger">*</span></label>
+                                                        <label class="col-sm-2 control-label"><strong>Billing Address</strong> <span class="text-danger">*</span></label>
                                                         <div class="col-sm-8">
                                                             <input type="text" class="form-control" value="{{ @$customer_data->billing_address }}" name="billing_address" id="billing_address" placeholder="Billing Address">
                                                             <span class="messages"></span>
                                                         </div>
                                                     </div>
                                                     <div class="form-group row">
-                                                        <label class="col-sm-2 control-label"><strong>Address</strong> <span class="text-danger">*</span></label>
+                                                        <label class="col-sm-2 control-label"><strong>Shipping Address</strong> <span class="text-danger">*</span></label>
                                                         <div class="col-sm-8">
                                                             <input type="text" class="form-control" value="{{ @$customer_data->shipping_address }}" name="shipping_address" id="shipping_address" placeholder="Shipping Address">
                                                             <span class="messages"></span>
@@ -404,7 +404,7 @@
                 $('#customer').hide();
                 $('#employee').show();
             }
-            else if('{{ @$data->roles }}' == 'cutomers'){
+            else if('{{ @$data->roles }}' == 'customers'){
                 $('#vendor').hide();
                 $('#customer').show();
                 $('#employee').hide();

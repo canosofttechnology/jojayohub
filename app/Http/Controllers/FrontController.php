@@ -263,6 +263,12 @@ class FrontController extends Controller
 
     public function categories($prime_slug, $slug = null, Request $request)
     {
+        $primary_category=SecondaryCategory::where('slug',$prime_slug)->first();
+        $product_category=ProductCategory::where('secondary_category_id',$primary_category->id)->get()->pluck('id')->toArray();
+        $related_brand_ids=Product::whereIn('category_id',$product_category)->get()->pluck('brand_id')->filter()->unique()->toArray();
+
+        // dd($products);
+
         $selected_sales_types = $request->sales_type;
         $ex = explode(',', $selected_sales_types);
         $selected_sales_types = Wholesale::whereIn('name', $ex)->get()->pluck('id')->toArray();
@@ -298,7 +304,7 @@ class FrontController extends Controller
 
             ->paginate(12);
 
-        $brands = $this->brand->get();
+        $brands = $this->brand->whereIn('id',$related_brand_ids)->get();
         $sale_types = Wholesale::all();
 
 

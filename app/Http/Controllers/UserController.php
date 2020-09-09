@@ -220,16 +220,19 @@ class UserController extends Controller
         $allCategories = $this->category->get();
         $vendor_data = '';
         $employee_data = '';
+        $customer_data = '';
         $permitted = '';
         if ($data->roles == 'vendor') {
             $vendor_data = $this->vendor->where('user_id', $id)->first();
             $permitted = $this->category_permitted->where('vendor_id', $vendor_data->id)->get();
         } elseif ($data->roles ==  'employee') {
             $employee_data = $this->employee->where('user_id', $id)->first();
+        }elseif($data->roles=='customers'){
+            $customer_data=$this->customer->where('user_id',$id)->first();
         }
         $active_tab = 'create';
         $allUsers = $this->user->where('roles', '!=', 'customers')->get();
-        return view('admin.pages.users', compact('allUsers', 'allCategories', 'data', 'permitted', 'employee_data', 'vendor_data', 'active_tab'));
+        return view('admin.pages.users', compact('allUsers', 'allCategories', 'data', 'permitted', 'employee_data', 'vendor_data', 'active_tab','customer_data'));
     }
 
     /**
@@ -295,13 +298,13 @@ class UserController extends Controller
 
             if($data['roles']=='customers'){
                 // $customer_data = new Customer();
-            $customer_data=Customer::where('user_id',$id)->first();
-            $customer_data['user_id'] = $this->user->id;
-            $customer_data->billing_address = $request->billing_address;
-            $customer_data->shipping_address = $request->shipping_address;
-            $customer_data->status = $request->status;
-            $customer_data->save();
-            Mail::to($data['email'])->send(new CustomerVerification($customer_data));
+                $customer_data=Customer::where('user_id',$id)->first();
+                $customer_data['user_id'] = $this->user->id;
+                $customer_data->billing_address = $request->billing_address;
+                $customer_data->shipping_address = $request->shipping_address;
+                $customer_data->status = $request->status;
+                $customer_data->save();
+                Mail::to($data['email'])->send(new CustomerVerification($customer_data));
             }
         }
         $request->session()->flash('success', 'User updated successfully.');
