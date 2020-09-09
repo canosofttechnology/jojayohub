@@ -150,6 +150,7 @@
                  </div>
 
                   <div class="tab-pane @if($active_tab == 'create') active @endif" id="create">
+
                     @if (Auth::user()->roles=='admin')
                   @if(!empty(@$data))
                         {{ Form::open(['url'=>route('users.update', @$data->id), 'class'=>'form-horizontal', 'id'=>'user_add', 'files'=>true,'method'=>'patch']) }}
@@ -200,7 +201,7 @@
                                                             <option value="admin" {{  @$data->roles == 'admin' ? 'selected' : ''}}>Admin</option>
                                                             <option value="vendor" {{  @$data->roles == 'vendor' ? 'selected' : ''}}>Vendor</option>
                                                             <option value="employee" {{  @$data->roles == 'employee' ? 'selected' : ''}}>Editor</option>
-                                                            <option value="customers" {{  @$data->roles == 'customers' ? 'selected' : ''}}>Customers</option>
+                                                            <option value="customers" {{  @$data->roles == 'customers' ? 'selected' : ''}}>Customer</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -268,6 +269,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
+
 
                                                 <div id="employee">
                                                     <div class="form-group row">
@@ -399,10 +401,16 @@
                 $('#vendor').show();
                 $('#customer').hide();
                 $('#employee').hide();
+                $('#customer').hide();
             } else if('{{ @$data->roles }}' == 'employee'){
                 $('#vendor').hide();
                 $('#customer').hide();
                 $('#employee').show();
+                $('#customer').hide();
+            }else if('{{ @$data->roles }}' == 'customers'){
+                $('#customer').show();
+                $('#vendor').hide();
+                $('#employee').hide();
             }
             else if('{{ @$data->roles }}' == 'customers'){
                 $('#vendor').hide();
@@ -427,16 +435,16 @@
                 $('#employee').hide(1000);
             } else if(role == 'employee'){
                 $('#employee').show(1000);
-                $('#customer').hide(1000);
                 $('#vendor').hide(1000);
+                $('#customer').hide(1000);
             } else if(role == 'admin'){
                 $('#employee').hide(1000);
                 $('#vendor').hide(1000);
                 $('#customer').hide(1000);
             }else if(role=='customers'){
+                $('#customer').show(1000);
                 $('#employee').hide(1000);
                 $('#vendor').hide(1000);
-                $('#customer').show(1000);
             }
         });
     </script>

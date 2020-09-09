@@ -345,7 +345,7 @@ class ProductController extends Controller
         $vendor_list = $this->vendors->get();
         $allProducts = $this->product->orderBy('created_at', 'desc')->get();
         $current_vendor = $this->vendors->with('categoryAssigned')->where('user_id', auth()->user()->id)->first();
-        return view('admin.pages.products', compact('category','product_attr','wholesale_types','colors','brands','product_sizes','colors_available','sizes_available','size_data','data','image_data', 'avail_data','vendor_list', 'active_tab','color_list', 'allProducts','current_vendor'));
+        return view('admin.pages.products', compact('category','product_attr','wholesale_types','colors','brands','product_sizes','colors_available','sizes_available','data','image_data', 'avail_data','vendor_list', 'active_tab','color_list', 'allProducts','current_vendor'));
     }
 
     /**
@@ -582,4 +582,27 @@ class ProductController extends Controller
         return response()->json($suk_detail);
     }
 
+    public function showProduct($user_id,$product_id)
+    {
+        $data = $this->product->findOrFail($product_id);
+
+        $color_list = $this->color->get();
+        $active_tab = "create";
+        $colors_available = $this->color_detail->where('product_id', $product_id)->get();
+        $sizes_available = $this->size_detail->where('product_id', $product_id)->get();
+        $image_data = $this->product_image->where('product_id', $product_id)->distinct()->get()->toArray();
+        $avail_data = $this->set->where('product_id', $product_id)->distinct()->get()->toArray();
+        $colors = $this->color->get();
+        $product_sizes = $this->size->where('product_category_id', $data->category_id)->get();
+        $wholesale_types = $this->product_wholesale->where('category_id', $data->category_id)->get();
+        $brands = $this->brand->get();
+        $category = $this->product_categories->get();
+        $product_attr = $this->product_categories->with('attributes')->where('id', $data->category_id)->get();
+        $vendor_list = $this->vendors->get();
+        $allProducts = $this->product->orderBy('created_at', 'desc')->get();
+        $current_vendor = $this->vendors->with('categoryAssigned')->where('user_id', auth()->user()->id)->first();
+        return view('admin.user.info.vendor_product_detail', compact('category','product_attr','wholesale_types','colors','brands',
+        'product_sizes','colors_available','sizes_available','data','image_data', 'avail_data','vendor_list',
+         'active_tab','color_list', 'allProducts','current_vendor'));
+    }
 }

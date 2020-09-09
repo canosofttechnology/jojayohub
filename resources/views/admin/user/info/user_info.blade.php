@@ -9,6 +9,10 @@
                   <li class="active"><a href="#manage" data-toggle="tab">User Info</a></li>
                   @if ($data->roles=='vendor'||$data->roles=='customers')
                     <li class=""><a href="#create" data-toggle="tab">{{ isset($vendor_sales)?'Vendor Sales':'Cutomer Purchase'}}</a></li>
+                    @if ($data->roles=='vendor')
+                    <li class=""><a href="#products" data-toggle="tab">Products</a></li>
+                    @endif
+
                 @endif
                   {{-- <input type="hidden" id="base" value="{{ route('ajax.users') }}"> --}}
                </ul>
@@ -49,6 +53,9 @@
 
                                             @if ($data->roles=='vendor')
                                                 @include('admin.user.info.vendor_info')
+                                            @endif
+                                            @if ($data->roles=='customers')
+                                                @include('admin.user.info.customer_info')
                                             @endif
 
                                             <div class="form-group">
@@ -97,6 +104,14 @@
                           @include('admin.user.info.customer_purchases')
                       @endif
                   </div>
+
+                    <div class="tab-pane" id="products">
+                        @if ($data->roles=='vendor')
+                        @include('admin.user.info.vendor_product')
+                        @endif
+                    </div>
+
+
                </div>
             </div>
          </div>

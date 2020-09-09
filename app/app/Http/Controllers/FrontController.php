@@ -56,11 +56,11 @@ class FrontController extends Controller
       $men_fashion = $pc->secondaryCategories->pluck('productCategories')->collapse()->pluck('products')->collapse();
       //dd($men_fashion);
       $name = "Women's Fashion";
-      $women_fashion = Product::whereHas('productCategory', function($query) 
+      $women_fashion = Product::whereHas('productCategory', function($query)
           use($name) {
-              $query->whereHas('secondaryCategory', function($query) 
-              use($name)  { 
-                  $query->whereHas('primaryCategory', function($query) 
+              $query->whereHas('secondaryCategory', function($query)
+              use($name)  {
+                  $query->whereHas('primaryCategory', function($query)
                   use($name){
                       $query->where('name', $name);
                   });
@@ -69,8 +69,8 @@ class FrontController extends Controller
         ->with([
           'productCategory' => function($query) use($name) {
               $query->whereHas('secondaryCategory', function($query) use($name)
-                { 
-                  $query->whereHas('primaryCategory', function($query) 
+                {
+                  $query->whereHas('primaryCategory', function($query)
                     use($name){
                         $query->where('name', $name);
                     });
@@ -78,22 +78,22 @@ class FrontController extends Controller
           },
           'productCategory.secondaryCategory'=> function($query) use($name)
           {
-                  $query->whereHas('primaryCategory', function($query) 
+                  $query->whereHas('primaryCategory', function($query)
                     use($name){
                         $query->where('name', $name);
                     });
           },
-          'productCategory.secondaryCategory.primaryCategory' =>                   
+          'productCategory.secondaryCategory.primaryCategory' =>
             function($query) use($name) {
                   $query->where('name', $name);
           }])->take(10)->get();
         // Electronic device
         $electronic_device = "Electronic Device";
-        $electronic_device_product = Product::whereHas('productCategory', function($query) 
+        $electronic_device_product = Product::whereHas('productCategory', function($query)
           use($electronic_device) {
-              $query->whereHas('secondaryCategory', function($query) 
-              use($electronic_device)  { 
-                  $query->whereHas('primaryCategory', function($query) 
+              $query->whereHas('secondaryCategory', function($query)
+              use($electronic_device)  {
+                  $query->whereHas('primaryCategory', function($query)
                   use($electronic_device){
                       $query->where('name', $electronic_device);
                   });
@@ -102,8 +102,8 @@ class FrontController extends Controller
         ->with([
           'productCategory' => function($query) use($electronic_device) {
               $query->whereHas('secondaryCategory', function($query) use($electronic_device)
-                { 
-                  $query->whereHas('primaryCategory', function($query) 
+                {
+                  $query->whereHas('primaryCategory', function($query)
                     use($electronic_device){
                         $query->where('name', $electronic_device);
                     });
@@ -111,23 +111,23 @@ class FrontController extends Controller
           },
           'productCategory.secondaryCategory'=> function($query) use($electronic_device)
           {
-                  $query->whereHas('primaryCategory', function($query) 
+                  $query->whereHas('primaryCategory', function($query)
                     use($electronic_device){
                         $query->where('name', $electronic_device);
                     });
           },
-          'productCategory.secondaryCategory.primaryCategory' =>                   
+          'productCategory.secondaryCategory.primaryCategory' =>
             function($query) use($electronic_device) {
                   $query->where('name', $electronic_device);
           }])->take(2)->get();
-          
+
         // Electronic accessories
         $electronic_accessories = "Electronic Accessories";
-        $electronic_accessories_product = Product::whereHas('productCategory', function($query) 
+        $electronic_accessories_product = Product::whereHas('productCategory', function($query)
           use($electronic_accessories) {
-              $query->whereHas('secondaryCategory', function($query) 
-              use($electronic_accessories)  { 
-                  $query->whereHas('primaryCategory', function($query) 
+              $query->whereHas('secondaryCategory', function($query)
+              use($electronic_accessories)  {
+                  $query->whereHas('primaryCategory', function($query)
                   use($electronic_accessories){
                       $query->where('name', $electronic_accessories);
                   });
@@ -136,8 +136,8 @@ class FrontController extends Controller
         ->with([
           'productCategory' => function($query) use($electronic_accessories) {
               $query->whereHas('secondaryCategory', function($query) use($electronic_accessories)
-                { 
-                  $query->whereHas('primaryCategory', function($query) 
+                {
+                  $query->whereHas('primaryCategory', function($query)
                     use($electronic_accessories){
                         $query->where('name', $electronic_accessories);
                     });
@@ -145,20 +145,20 @@ class FrontController extends Controller
           },
           'productCategory.secondaryCategory'=> function($query) use($electronic_accessories)
           {
-                  $query->whereHas('primaryCategory', function($query) 
+                  $query->whereHas('primaryCategory', function($query)
                     use($electronic_accessories){
                         $query->where('name', $electronic_accessories);
                     });
           },
-          'productCategory.secondaryCategory.primaryCategory' =>                   
+          'productCategory.secondaryCategory.primaryCategory' =>
             function($query) use($electronic_accessories) {
                   $query->where('name', $electronic_accessories);
           }])->take(2)->get();
-          
+
         // Tv
         $tv_and_home = "TV & Home Appliances";
         $tv_and_home = Product::primary("TV & Home Appliances")->get();
-        
+
         $available_brands = $this->brand->get();
         return view('frontend.pages.index', compact('latest_products', 'available_brands','women_fashion', 'men_fashion','all_blogs','hero_slider','brand_list','electronic_device_product','electronic_accessories_product','tv_and_home_product'));
       }
@@ -247,19 +247,19 @@ class FrontController extends Controller
 
     public function eSewa(){
       $gateway = "esewa";
-      $tAmt = "100";		
-      $ClientId = 'ee2c3ca1-696b-4cc5-a6be-2c40d929d453';	
-      date_default_timezone_set('Asia/Kathmandu');	
-      $date = date('y/m/d H:i:s');		
+      $tAmt = "100";
+      $ClientId = 'ee2c3ca1-696b-4cc5-a6be-2c40d929d453';
+      date_default_timezone_set('Asia/Kathmandu');
+      $date = date('y/m/d H:i:s');
       $a = str_replace("/", "", $date);
       $b = str_replace(":", "", $a);
       $c = str_replace(" ", "", $b);
-      $pid = $c. "-" . $ClientId;		
+      $pid = $c. "-" . $ClientId;
       $url = "";
       $base_url = URL::to('/');
-      
+
       if($gateway == "esewa")
-      {		
+      {
         $url = 'https://uat.esewa.com.np/epay/main?amt=' . $tAmt . '&pdc=0&pdc=0&psc=0&txAmt=0&tAmt=' . $tAmt . '&pid=' . $pid . '&scd=epay_payment' . '&su=' . $base_url . '/payment/esewa_success?q=su' .'&fu=' . $base_url . '/payment/esewa_failed?q=fu';
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
@@ -279,8 +279,8 @@ class FrontController extends Controller
         $response = curl_exec($curl);
         var_dump($response);
         $response = trim(strip_tags($response));
-        var_dump($response);			
-      }		
+        var_dump($response);
+      }
     }
 
     public function cartContent(){

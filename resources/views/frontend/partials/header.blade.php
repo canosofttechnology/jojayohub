@@ -22,7 +22,7 @@
       <!-- font - stroyka -->
       <link rel="stylesheet" href="/frontend/css/stroyka.css">
 
-
+      <link rel="stylesheet" href="/admin/css/toastr.min.css">
    </head>
    <body>
       <!-- Load Facebook SDK for JavaScript -->

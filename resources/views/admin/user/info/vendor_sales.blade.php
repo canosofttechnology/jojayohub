@@ -1,5 +1,5 @@
 <div class="table-responsive">
-    <table id="normal-table" class="table table-striped table-bordered nowrap datatable_action" role="grid" aria-describedby="basic-col-reorder_info">
+    <table id="" class="table table-striped table-bordered nowrap datatable_action" role="grid" aria-describedby="basic-col-reorder_info">
        <thead>
            <tr>
                <th>Retailer</th>
