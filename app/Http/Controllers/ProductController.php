@@ -545,13 +545,6 @@ class ProductController extends Controller
     {
         $data = $this->product->findOrFail($product_id);
 
-        // if(!$data) {
-        //     $notification = array(
-        //       'message' => 'Product not found.',
-        //       'alert-type' => 'error'
-        //     );
-        //     return redirect()->back()->with($notification);
-        // }
         $color_list = $this->color->get();
         $active_tab = "create";
         $colors_available = $this->color_detail->where('product_id', $product_id)->get();
