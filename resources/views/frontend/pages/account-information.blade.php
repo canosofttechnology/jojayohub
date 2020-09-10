@@ -39,13 +39,13 @@
                     <div class="col-md-6">
                         <div class="form-group required-field">
                             <label for="acc-name">Billing Address <span class="text-danger">*</span></label>
-                            <input type="text" value="{{ $user->customer->billing_address }}" class="form-control"  name="billing_address" required>
+                            <input type="text" value="{{ @$user->customer->billing_address }}" class="form-control"  name="billing_address" required>
                         </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-group required-field">
                           <label for="acc-email">Shipping Address <span class="text-danger">*</span></label>
-                          <input type="text" value="{{ $user->customer->shipping_address }}" class="form-control"  name="shipping_address" required>
+                          <input type="text" value="{{ @$user->customer->shipping_address }}" class="form-control"  name="shipping_address" required>
                       </div>
                     </div>
                 </div>

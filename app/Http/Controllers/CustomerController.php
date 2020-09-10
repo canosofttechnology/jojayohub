@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
+use App\Models\Sales;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Auth;
@@ -35,9 +37,9 @@ class CustomerController extends Controller
         $user = $this->_findUser();
         // $request['password']=bcrypt('password');
         // if (Hash::check($request->password, $user->password)) {
-            $user->fill($request->only('name', 'email', 'contact'));
-            $user->save();
-            $user->customer->update($request->only('billing_address', 'shipping_address'));
+        $user->fill($request->only('name', 'email', 'contact'));
+        $user->save();
+        $user->customer->update($request->only('billing_address', 'shipping_address'));
         // }
         return redirect()->back();
     }
@@ -46,21 +48,32 @@ class CustomerController extends Controller
     {
         return view('frontend.pages.customer.change_password');
     }
-    public function changePassword(Request $request){
+    public function changePassword(Request $request)
+    {
 
         $request->validate([
-            'current_password'=>'required',
-            'password'=>'required|confirmed',
+            'current_password' => 'required',
+            'password' => 'required|confirmed',
         ]);
 
-        $user=$this->_findUser();
-        if(Hash::check($request->current_password, $user->password)){
-            $new_password=Hash::make($request->password);
-            $user->update(['password'=>$new_password]);
+        $user = $this->_findUser();
+        if (Hash::check($request->current_password, $user->password)) {
+            $new_password = Hash::make($request->password);
+            $user->update(['password' => $new_password]);
         }
         return redirect()->back();
     }
 
+    public function purchasedProduct()
+    {
+        $purchased_products = Sales::with('vendor')->where('retailer_id', auth()->user()->id)->get();
+        return view('frontend.pages.customer.purchased_product', compact('purchased_products'));
+    }
+    public function orderedProduct()
+    {
+        $orders = Order::with('product')->where('user_id', auth()->user()->id)->latest()->get();
+        return view('frontend.pages.customer.ordered_product', compact('orders'));
+    }
     private function _findUser()
     {
         return User::findOrFail(Auth::id());

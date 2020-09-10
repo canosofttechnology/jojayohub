@@ -3,10 +3,7 @@ $title = Request::segment(1);
 @endphp
 <nav aria-label="breadcrumb" class="breadcrumb-nav">
     <div class="container">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ url('/') }}"><i class="icon-home"></i></a></li>
-            <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
-        </ol>
+        <div style="height: 20px; width: 100%;"></div>
     </div><!-- End .container -->
 </nav>
 

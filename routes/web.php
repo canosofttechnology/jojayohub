@@ -284,6 +284,8 @@ Route::group(['middleware' => ['auth', 'customers']], function () {
     Route::patch('/account-information', 'CustomerController@accountUpdate')->name('customer.account.update');
     Route::get('/change-password', 'CustomerController@changePasswordForm')->name('customer.changepassword.form');
     Route::patch('/change-password', 'CustomerController@changePassword')->name('customer.changepassword');
+    Route::get('/purchased-product', 'CustomerController@purchasedProduct')->name('customer.purchase');
+    Route::get('/ordered-product', 'CustomerController@orderedProduct')->name('customer.ordered');
 
     Route::get('/add-address', 'FrontController@addressBookAdd')->name('addressList');
 
