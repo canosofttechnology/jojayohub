@@ -16,9 +16,9 @@
           </div>
           <div>
           <form class="account-menu__form" action="{{ route('customerlogin') }}" method="POST">
-            <input type="hidden" name="_token" value="fyeLFQ8D5WpqcE45GN63GsOr20XiidNAsVSXJCln">                                          
+          <input type="hidden" name="_token" value="{{ csrf_token()}}">
             <div class="account-menu__form-title">Log In to Your Account</div>
-            <div class="form-group"><label for="header-signin-email" class="sr-only">Email address</label> 
+            <div class="form-group"><label for="header-signin-email" class="sr-only">Email address</label>
                 <input id="header-signin-email" type="email" class="form-control form-control-sm" placeholder="Email address" name="email">
             </div>
             <div class="form-group">
@@ -61,7 +61,7 @@
                                     <strong>{{ Session::get('password') }}</strong>
                                 </span>
                             @endif
-                        </div>                      
+                        </div>
                         <div class="form-group submtit">
                             <button type="submit" class="ps-btn ps-btn--fullwidth">Login</button>
                         </div>

@@ -28,4 +28,12 @@ class User extends Authenticatable
         return $this->hasMany('App\Models\AddressBook');
     }
 
+    public function vendor(){
+        return $this->hasOne(Vendor::class);
+    }
+
+    public function customer(){
+        return $this->hasOne(Customer::class);
+    }
+
 }

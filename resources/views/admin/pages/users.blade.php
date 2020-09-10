@@ -6,14 +6,14 @@
          <div class="col-sm-22">
             <div class="nav-tabs-custom">
                <ul class="nav nav-tabs">
-                  <li class="@if($active_tab == 'manage') active @endif"><a href="#manage" data-toggle="tab">Vendors</a></li>
-                  <li class=""><a href="#customers" data-toggle="tab">Customer</a></li>
-                  <li class=""><a href="#employees-tab" data-toggle="tab">Employee</a></li>
-                  <li class="@if($active_tab == 'create') active @endif"><a href="#create" data-toggle="tab">New User</a></li>
+                  <li class="{{($active_tab == 'list') ? 'active':''}}"><a href="#manage" data-toggle="tab">Vendors</a></li>
+                    <li class="{{$active_tab=='customers'?'active':''}}"><a href="#customers" data-toggle="tab">Customer</a></li>
+                  <li class="{{$active_tab=='employees'?'active':''}}"><a href="#employees-tab" data-toggle="tab">Employee</a></li>
+                  <li class="{{($active_tab == 'create') ?'active':''}}"><a href="#create" data-toggle="tab">New User</a></li>
                   <input type="hidden" id="base" value="{{ route('ajax.users') }}">
                </ul>
                <div class="tab-content bg-white">
-                  <div class="tab-pane @if($active_tab == 'manage') active @endif" id="manage">
+                  <div class="tab-pane {{($active_tab == 'list') ?'active':''}}" id="manage">
                      <div class="table-responsive">
                      <table class="table table-striped table-bordered nowrap datatable_action" role="grid" aria-describedby="basic-col-reorder_info">
                         <thead>
@@ -58,7 +58,7 @@
                      </div>
                   </div>
 
-                  <div class="tab-pane" id="customers">
+                  <div class="tab-pane {{$active_tab=='customers'?'active':''}}" id="customers">
                      <div class="table-responsive">
                      <table class="table table-striped table-bordered nowrap datatable_action" role="grid" aria-describedby="basic-col-reorder_info">
                         <thead>
@@ -103,7 +103,7 @@
                      </div>
                   </div>
 
-                  <div class="tab-pane" id="employees-tab">
+                <div class="tab-pane {{ $active_tab=='employees'?'active':''}}" id="employees-tab">
                     <div class="table-responsive">
                     <table class="table table-striped table-bordered nowrap datatable_action" role="grid" aria-describedby="basic-col-reorder_info">
                        <thead>

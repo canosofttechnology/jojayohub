@@ -24,13 +24,7 @@ Route::get('logout', 'Auth\LoginController@logout', function () {
 
 Route::get('/', 'FrontController@index');
 
-Route::get('/login', function () {
-    if (Auth::user() && Auth::user()->roles == 'customers') {
-        return redirect('/dashboard');
-    } else {
-        return view('frontend.pages.login');
-    }
-})->name('signinform');
+Route::get('/login', 'CheckLoginController@index')->name('signinform');
 
 Route::get('/signup', function () {
     if (Auth::user()->roles == 'customers') {
@@ -107,7 +101,7 @@ Route::post('/customer/login', 'UserController@CustomerLogin')->name('customerlo
 
 Route::post('/customer/signup', 'UserController@customerSignUp')->name('customerSignUp');
 
-Route::patch('user-edit/{id}', 'UserController@UpdateUser')->name('update_user');
+// Route::patch('user-edit/{id}', 'UserController@UpdateUser')->name('update_user');
 
 Route::get('/cart', function () {
     return view('frontend.pages.cart');
@@ -176,9 +170,9 @@ Route::group(['prefix' => 'auth', 'middleware' => ['auth']], function () {
 
     Route::get('/expenses', 'ProductExpenseController@index')->name('record-list');
 
-    Route::get('/dashboard', function () {
-        return view('admin.pages.index');
-    });
+    Route::get('/dashboard','DashboardController@index');
+
+    Route::get('inquiry/{inquiry}','DashboardController@inquries')->name('inquiry');
 
     Route::get('/media', function () {
         return view('admin.pages.fileupload');
@@ -284,13 +278,12 @@ Route::group(['prefix' => 'auth', 'middleware' => ['auth']], function () {
 
 });
 Route::group(['middleware' => ['auth', 'customers']], function () {
-    Route::get('/dashboard', function () {
-        return view('frontend.pages.dashboard');
-    });
+    Route::get('/dashboard','CustomerController@dashboard')->name('customer.dashboard');
 
-    Route::get('/account-information', function () {
-        return view('frontend.pages.account-information');
-    });
+    Route::get('/account-information', 'CustomerController@accountInfo')->name('customer.account');
+    Route::patch('/account-information', 'CustomerController@accountUpdate')->name('customer.account.update');
+    Route::get('/change-password', 'CustomerController@changePasswordForm')->name('customer.changepassword.form');
+    Route::patch('/change-password', 'CustomerController@changePassword')->name('customer.changepassword');
 
     Route::get('/add-address', 'FrontController@addressBookAdd')->name('addressList');
 

@@ -50,7 +50,12 @@ class UserController extends Controller
     {
         if (Auth::user()->roles == 'vendor')
             return view('errors.403');
-        $active_tab = "manage";
+
+        if (!request()->has('active_tab'))
+            $active_tab = "list";
+        else
+            $active_tab = request('active_tab');
+
         $allCategories = $this->category->get();
 
         $allUsers = $this->user->where('roles', 'vendor')->get();
@@ -240,8 +245,8 @@ class UserController extends Controller
             $permitted = $this->category_permitted->where('vendor_id', $vendor_data->id)->get();
         } elseif ($data->roles ==  'employee') {
             $employee_data = $this->employee->where('user_id', $id)->first();
-        }elseif($data->roles=='customers'){
-            $customer_data=$this->customer->where('user_id',$id)->first();
+        } elseif ($data->roles == 'customers') {
+            $customer_data = $this->customer->where('user_id', $id)->first();
         }
 
         if ($data->roles == 'customers') {
@@ -345,9 +350,9 @@ class UserController extends Controller
                 $this->employee->save();
             }
 
-            if($data['roles']=='customers'){
+            if ($data['roles'] == 'customers') {
                 // $customer_data = new Customer();
-                $customer_data=Customer::where('user_id',$id)->first();
+                $customer_data = Customer::where('user_id', $id)->first();
                 $customer_data['user_id'] = $this->user->id;
                 $customer_data->billing_address = $request->billing_address;
                 $customer_data->shipping_address = $request->shipping_address;
@@ -414,6 +419,7 @@ class UserController extends Controller
 
     public function CustomerLogin(Request $request)
     {
+        // dd($request->all());
         $user = User::where('email', '=', $request->input('email'))->first();
         if ($user === null) {
             request()->session()->flash('email', 'Email not found in our database.');
@@ -424,7 +430,7 @@ class UserController extends Controller
             request()->session()->flash('password', 'Password mismatched!');
             return back();
         }
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password,'roles'=>'customers'])) {
             if (Auth::user()->roles == 'customers') {
                 return redirect('/dashboard');
             } else {
@@ -472,6 +478,31 @@ class UserController extends Controller
 
     public function UpdateUser(Request $request, $id)
     {
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
+            'current_password' => 'required',
+            'contact' => 'nullable|string',
+            'image' => 'nullable|string'
+        ]);
+
+        $user_data = User::findOrFail($id);
+        // if ($request->password == null && isset($user_data)) {
+        //     $request['password'] = $user_data->password;
+        // } else {
+        if (Hash::check($request->password, $user_data->password)) {
+            $errors = new MessageBag(['old_password' => ['The old password you entered did not matched!']]);
+            return redirect()->back()->withErrors($errors)->withInput($request->all());
+        }
+        $request['password'] = Hash::make($request->password);
+        // }
+
+        $user_data->fill($request->all());
+        $user_data->save();
+        return redirect()->back();
+
+
         $user_data = $this->user->find($id);
         if (!$user_data) {
             request()->session()->flash('error', 'User not found');
@@ -480,6 +511,7 @@ class UserController extends Controller
         if ($request->password == null) {
             $request['password'] = $this->user->password;
         }
+
         if ($request->change_password == 1) {
             if (Hash::check($request->old_password, $user_data->password)) {
                 $errors = new MessageBag(['old_password' => ['The old password you entered did not matched!']]);
@@ -578,7 +610,7 @@ class UserController extends Controller
 
                 $vendor_sales = Sales::with('retailer')->where('vendor_id', $vendor_data->id)->get();
                 $vendor_products = Product::with('set')->where('vendor_id', $vendor_data->id)->orderBy('created_at', 'desc')->get();
-// dd($vendor_products);
+                // dd($vendor_products);
                 // dd($vendor_sales);
             }
         } elseif ($role ==  'employee') {

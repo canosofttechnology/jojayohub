@@ -103,7 +103,7 @@
                   @endif
                   </ul>
                 </li>
-                
+
                 @if(Auth::user()->admin())
                 <li class='sub-menu '>
                   <a data-toggle='collapse' href='#posts'> <em class='fa fa-newspaper-o'></em><span>Blogs</span></a>
@@ -122,7 +122,7 @@
                    <em class='fa fa-sitemap'></em><span>Categories</span></a>
                   </li>
                   </ul>
-                </li>                
+                </li>
                 <li class='sub-menu '>
                   <a data-toggle='collapse' href='#page'> <em class='fa fa-newspaper-o'></em><span>Pages</span></a>
                   <ul id=page class='nav s-menu sidebar-subnav collapse'><li class="sidebar-subnav-header">Pages
@@ -240,7 +240,7 @@ $("#idCalculadora").Calculadora({'EtiquetaBorrar': 'Clear', TituloHTML: ''});
 <section>
   <div class="content-wrapper">
      <div class="content-heading">
-        <a class='text-muted' href='/admin/dashboard'>{{ ucfirst(Request::segment('2')) }}</a>
+        <a class='text-muted' >{{ ucfirst(Request::segment('2')) }}</a>
         <div class="pull-right">
            <small class="text-sm">
            &nbsp; {{ date('l jS F', strtotime('Y-m-d')) }} - {{ date('Y') }}, &nbsp;Time &nbsp;<span id="txt"></span></small>
